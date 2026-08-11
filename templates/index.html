@@ -9,20 +9,6 @@
   <div class="hero-glow hero-glow-2"></div>
 
 
-  <div id="developer-credit" style="
-    margin: 0 auto 18px;
-    display: inline-block;
-    background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(168,85,247,0.15));
-    border: 1px solid rgba(168,85,247,0.35);
-    border-radius: 999px;
-    padding: 8px 24px;
-    font-size: 0.85rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    color: #c4b5fd;
-    text-transform: uppercase;
-  ">👨‍💻 Developed by &nbsp;<span style="color:#fff;">MD RAISUL ISLAM</span></div>
-
   <h1>
     Shop Smarter with<br/>
     <span class="highlight">AI-Powered Recommendations</span>
@@ -113,5 +99,26 @@
     {% endfor %}
   </div>
 </section>
+
+<!-- Fixed bottom-right developer credit -->
+<div id="developer-credit" style="
+  position: fixed;
+  bottom: 20px;
+  right: 24px;
+  z-index: 9999;
+  background: linear-gradient(135deg, rgba(99,102,241,0.20), rgba(168,85,247,0.20));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(168,85,247,0.40);
+  border-radius: 999px;
+  padding: 8px 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #c4b5fd;
+  text-transform: uppercase;
+  box-shadow: 0 4px 20px rgba(99,102,241,0.25);
+  white-space: nowrap;
+">👨‍💻 Developed by &nbsp;<span style="color:#fff;">MD RAISUL ISLAM</span></div>
 
 {% endblock %}
