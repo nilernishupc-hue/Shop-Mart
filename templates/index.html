@@ -29,6 +29,64 @@
   </div>
 </section>
 
+<!-- ── Best-Selling Items ──────────────────────────────────── -->
+{% if best_sellers %}
+<section class="section" id="best-sellers-section" style="padding-top:0;">
+  <div class="section-header" id="best-sellers-header">
+    <h2 class="section-title" style="display:flex;align-items:center;gap:10px;">
+      <span style="background:linear-gradient(135deg,#f59e0b,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:1.6rem;">🏆</span>
+      Best-Selling Items
+      <span style="background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:999px;letter-spacing:0.05em;">TOP PICKS</span>
+    </h2>
+    <a href="{{ url_for('products') }}" class="section-link" id="bestsellers-view-all">View all →</a>
+  </div>
+
+  <!-- Scrollable row -->
+  <div id="best-sellers-grid" style="
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--sp3);
+    margin-top: var(--sp3);
+  ">
+    {% for p in best_sellers %}
+    <div class="card" id="best-seller-card-{{ p.id }}" style="position:relative;">
+
+      <!-- Rank badge -->
+      <div style="
+        position:absolute; top:10px; left:10px; z-index:2;
+        background:linear-gradient(135deg,#f59e0b,#ef4444);
+        color:#fff; border-radius:999px; padding:3px 10px;
+        font-size:0.7rem; font-weight:800; letter-spacing:0.04em;
+        box-shadow:0 2px 8px rgba(245,158,11,0.5);
+      ">#{{ loop.index }} Best Seller</div>
+
+      <div class="card-img-wrap">
+        <img src="{{ p.image_url }}" alt="{{ p.name }}" loading="lazy" />
+        <span class="card-badge">{{ p.category }}</span>
+      </div>
+      <div class="card-body">
+        <div class="card-category">{{ p.category }}</div>
+        <a href="{{ url_for('product_detail', id=p.id) }}" class="card-name" id="bestseller-link-{{ p.id }}">{{ p.name }}</a>
+        <div class="card-stars">
+          {% for _ in range(p.rating|int) %}★{% endfor %}{% for _ in range(5 - p.rating|int) %}☆{% endfor %}
+          <span>({{ p.rating }})</span>
+        </div>
+        <!-- Sales count tag -->
+        <div style="
+          margin-top:6px;
+          font-size:0.75rem; color:#f59e0b; font-weight:700;
+          display:flex; align-items:center; gap:4px;
+        ">
+          🔥 {{ (p.interaction_count or 0) }} sold
+        </div>
+        <div class="card-price">${{ "%.2f"|format(p.price) }}</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
 <!-- ── Personalised Recommendations ─────────────────────────── -->
 {% if current_user and recommendations %}
 <section class="section" id="recommendations-section">

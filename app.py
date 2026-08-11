@@ -70,8 +70,18 @@ def inject_user():
 @app.route("/")
 def index():
     products = query_db("SELECT * FROM products ORDER BY rating DESC LIMIT 8")
-    recommendations = []
 
+    # Best-sellers: top 6 products by total number of interactions (purchases/views)
+    best_sellers = query_db("""
+        SELECT p.*, COUNT(i.id) AS interaction_count
+        FROM products p
+        LEFT JOIN interactions i ON i.product_id = p.id
+        GROUP BY p.id
+        ORDER BY interaction_count DESC, p.rating DESC
+        LIMIT 6
+    """)
+
+    recommendations = []
     if "user_id" in session:
         recent = query_db(
             "SELECT product_id FROM interactions WHERE user_id = ? "
@@ -87,7 +97,7 @@ def index():
         except Exception:
             recommendations = []
 
-    return render_template("index.html", products=products, recommendations=recommendations)
+    return render_template("index.html", products=products, recommendations=recommendations, best_sellers=best_sellers)
 
 
 @app.route("/login", methods=["GET", "POST"])
