@@ -184,6 +184,22 @@ def products():
     paginated    = all_products[start : start + per_page]
     total_pages  = max((total + per_page - 1) // per_page, 1)
 
+    # Max 5 visible page numbers window
+    max_visible_pages = 5
+    if total_pages <= max_visible_pages:
+        start_page = 1
+        end_page = total_pages
+    else:
+        if page <= 3:
+            start_page = 1
+            end_page = max_visible_pages
+        elif page >= total_pages - 2:
+            start_page = total_pages - max_visible_pages + 1
+            end_page = total_pages
+        else:
+            start_page = page - 2
+            end_page = page + 2
+
     categories = [r["category"] for r in query_db("SELECT DISTINCT category FROM products ORDER BY category")]
 
     return render_template(
@@ -194,6 +210,8 @@ def products():
         sort=sort,
         page=page,
         total_pages=total_pages,
+        start_page=start_page,
+        end_page=end_page,
         categories=categories,
     )
 
