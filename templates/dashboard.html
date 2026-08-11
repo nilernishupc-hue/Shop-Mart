@@ -22,11 +22,15 @@
     </div>
     <div class="metric-card" id="kpi-hybrid-precision">
       <div class="metric-label">Hybrid Precision@5</div>
-      <div class="metric-value">{{ "%.0f"|format(metrics.hybrid.precision * 100) }}%</div>
+      <div class="metric-value">{{ "%.2f"|format(metrics.hybrid.precision) }}</div>
     </div>
     <div class="metric-card" id="kpi-hybrid-f1">
       <div class="metric-label">Hybrid F1-Score@5</div>
-      <div class="metric-value">{{ "%.0f"|format(metrics.hybrid.f1 * 100) }}%</div>
+      <div class="metric-value">{{ "%.2f"|format(metrics.hybrid.f1) }}</div>
+    </div>
+    <div class="metric-card" id="kpi-hybrid-ndcg">
+      <div class="metric-label">Hybrid NDCG</div>
+      <div class="metric-value">{{ "%.2f"|format(metrics.hybrid.ndcg) }}</div>
     </div>
   </div>
 
@@ -52,18 +56,22 @@
       <thead>
         <tr style="background:var(--grey-50);text-align:left;">
           <th style="padding:12px 16px;font-size:.9rem;color:var(--text-muted);font-weight:600;">Model</th>
-          <th style="padding:12px 16px;font-size:.9rem;color:var(--text-muted);font-weight:600;">Precision@5</th>
-          <th style="padding:12px 16px;font-size:.9rem;color:var(--text-muted);font-weight:600;">Recall@5</th>
-          <th style="padding:12px 16px;font-size:.9rem;color:var(--text-muted);font-weight:600;">F1@5</th>
+          <th style="padding:12px 16px;font-size:.9rem;color:var(--text-muted);font-weight:600;text-align:center;">Precision@5</th>
+          <th style="padding:12px 16px;font-size:.9rem;color:var(--text-muted);font-weight:600;text-align:center;">Recall@5</th>
+          <th style="padding:12px 16px;font-size:.9rem;color:var(--text-muted);font-weight:600;text-align:center;">F1-Score</th>
+          <th style="padding:12px 16px;font-size:.9rem;color:var(--text-muted);font-weight:600;text-align:center;">MAP</th>
+          <th style="padding:12px 16px;font-size:.9rem;color:var(--text-muted);font-weight:600;text-align:center;">NDCG</th>
         </tr>
       </thead>
       <tbody>
-        {% for key, label in [('cf','Collaborative Filtering (SVD)'),('cb','Content-Based (TF-IDF)'),('hybrid','Hybrid (0.6×CF + 0.4×CB)')] %}
-        <tr style="border-top:1px solid var(--grey-100);" id="row-{{ key }}">
-          <td style="padding:14px 16px;font-weight:600;">{{ label }}</td>
-          <td style="padding:14px 16px;">{{ "%.2f"|format(metrics[key].precision) }}</td>
-          <td style="padding:14px 16px;">{{ "%.2f"|format(metrics[key].recall) }}</td>
-          <td style="padding:14px 16px;"><strong>{{ "%.2f"|format(metrics[key].f1) }}</strong></td>
+        {% for key, label in [('random','Random Baseline'),('popular','Popularity-Based'),('cf','Collaborative Filtering'),('cb','Content-Based Filtering'),('hybrid','Hybrid Model')] %}
+        <tr style="border-top:1px solid var(--grey-100);{% if key == 'hybrid' %}background:rgba(99,102,241,0.06);{% endif %}" id="row-{{ key }}">
+          <td style="padding:14px 16px;font-weight:{% if key == 'hybrid' %}700{% else %}600{% endif %};">{{ label }}{% if key == 'hybrid' %} ⭐{% endif %}</td>
+          <td style="padding:14px 16px;text-align:center;">{{ "%.2f"|format(metrics[key].precision) }}</td>
+          <td style="padding:14px 16px;text-align:center;">{{ "%.2f"|format(metrics[key].recall) }}</td>
+          <td style="padding:14px 16px;text-align:center;"><strong>{{ "%.2f"|format(metrics[key].f1) }}</strong></td>
+          <td style="padding:14px 16px;text-align:center;">{{ "%.2f"|format(metrics[key].map) }}</td>
+          <td style="padding:14px 16px;text-align:center;">{{ "%.2f"|format(metrics[key].ndcg) }}</td>
         </tr>
         {% endfor %}
       </tbody>
@@ -72,18 +80,18 @@
 
   <script>
     const m = {{ metrics | tojson }};
-    const labels  = ['Collaborative Filtering', 'Content-Based', 'Hybrid Model'];
+    const labels  = ['Random Baseline', 'Popularity-Based', 'Collaborative Filtering', 'Content-Based Filtering', 'Hybrid Model'];
     const colours = {
+      grey:    'rgba(156,163,175,0.80)',
+      orange:  'rgba(251,146,60,0.80)',
       blue:    'rgba(74,144,217,0.85)',
-      navy:    'rgba(26,35,50,0.75)',
       teal:    'rgba(16,185,129,0.75)',
-      blueB:   'rgba(74,144,217,1)',
-      navyB:   'rgba(26,35,50,1)',
-      tealB:   'rgba(16,185,129,1)',
+      purple:  'rgba(99,102,241,0.90)',
     };
+    const bgColors = [colours.grey, colours.orange, colours.blue, colours.teal, colours.purple];
     const chartDefaults = {
       plugins:{ legend:{ labels:{ font:{ family:'Inter' } } } },
-      scales:{ y:{ beginAtZero:true, max:1, ticks:{ font:{ family:'Inter' } } }, x:{ ticks:{ font:{ family:'Inter' } } } }
+      scales:{ y:{ beginAtZero:true, max:0.4, ticks:{ font:{ family:'Inter' } } }, x:{ ticks:{ font:{ family:'Inter' } } } }
     };
 
     // F1 chart
@@ -93,8 +101,8 @@
         labels,
         datasets:[{
           label:'F1-Score@5',
-          data:[ m.cf.f1, m.cb.f1, m.hybrid.f1 ],
-          backgroundColor:[ colours.blue, colours.teal, colours.navy ],
+          data:[ m.random.f1, m.popular.f1, m.cf.f1, m.cb.f1, m.hybrid.f1 ],
+          backgroundColor: bgColors,
           borderRadius: 8,
           borderSkipped: false,
         }]
@@ -108,8 +116,8 @@
       data: {
         labels,
         datasets:[
-          { label:'Precision@5', data:[ m.cf.precision, m.cb.precision, m.hybrid.precision ], backgroundColor: colours.blue, borderRadius:8, borderSkipped:false },
-          { label:'Recall@5',    data:[ m.cf.recall,    m.cb.recall,    m.hybrid.recall    ], backgroundColor: colours.navy, borderRadius:8, borderSkipped:false },
+          { label:'Precision@5', data:[ m.random.precision, m.popular.precision, m.cf.precision, m.cb.precision, m.hybrid.precision ], backgroundColor: 'rgba(99,102,241,0.80)', borderRadius:8, borderSkipped:false },
+          { label:'Recall@5',    data:[ m.random.recall,    m.popular.recall,    m.cf.recall,    m.cb.recall,    m.hybrid.recall    ], backgroundColor: 'rgba(16,185,129,0.75)', borderRadius:8, borderSkipped:false },
         ]
       },
       options: chartDefaults
