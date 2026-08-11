@@ -30,6 +30,10 @@
           🛒 Cart
           <span id="cart-badge" style="background:var(--sunset); color:var(--white); border-radius:50%; width:20px; height:20px; display:{% if cart_count > 0 %}inline-flex{% else %}none{% endif %}; align-items:center; justify-content:center; font-size:.75rem; font-weight:bold; position:absolute; top:-8px; right:-8px; border:2px solid var(--navy-dark);">{{ cart_count }}</span>
         </a>
+        <button onclick="toggleChat()" class="btn btn-outline" id="nav-support-btn" style="position:relative; display:flex; align-items:center; gap:6px; border-color:rgba(99,102,241,0.5); color:#a5b4fc;">
+          💬 Support
+          <span id="support-badge" style="background:#ef4444; color:#fff; border-radius:50%; width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; font-size:.65rem; font-weight:700; position:absolute; top:-8px; right:-8px; border:2px solid var(--navy-dark);">1</span>
+        </button>
         <a href="{{ url_for('profile') }}" class="btn btn-outline" id="nav-profile">
           👤 {{ current_user.username }}
         </a>
@@ -38,6 +42,10 @@
         <a href="{{ url_for('login') }}" class="btn btn-outline" id="nav-cart-guest" style="position:relative; display:flex; align-items:center; gap:6px;">
           🛒 Cart
         </a>
+        <button onclick="toggleChat()" class="btn btn-outline" id="nav-support-btn-guest" style="position:relative; display:flex; align-items:center; gap:6px; border-color:rgba(99,102,241,0.5); color:#a5b4fc;">
+          💬 Support
+          <span id="support-badge" style="background:#ef4444; color:#fff; border-radius:50%; width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; font-size:.65rem; font-weight:700; position:absolute; top:-8px; right:-8px; border:2px solid var(--navy-dark);">1</span>
+        </button>
         <a href="{{ url_for('login') }}" class="btn btn-outline" id="nav-login">Login</a>
         <a href="{{ url_for('register') }}" class="btn btn-primary" id="nav-register">Register</a>
       {% endif %}
@@ -63,31 +71,16 @@
 
   <!-- ── Live Support Chat Widget ──────────────────────────── -->
   <style>
-    #support-btn {
-      position: fixed; bottom: 24px; left: 24px; z-index: 9998;
-      width: 58px; height: 58px; border-radius: 50%;
-      background: linear-gradient(135deg, #6366f1, #8b5cf6);
-      border: none; cursor: pointer; box-shadow: 0 4px 20px rgba(99,102,241,0.5);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.5rem; transition: transform 0.2s, box-shadow 0.2s;
-    }
-    #support-btn:hover { transform: scale(1.1); box-shadow: 0 6px 28px rgba(99,102,241,0.7); }
-    #support-badge {
-      position: absolute; top: -4px; right: -4px; background: #ef4444;
-      color: #fff; border-radius: 50%; width: 18px; height: 18px;
-      font-size: 0.65rem; font-weight: 700; display: flex;
-      align-items: center; justify-content: center; border: 2px solid #0f172a;
-    }
     #support-panel {
-      position: fixed; bottom: 96px; left: 24px; z-index: 9999;
+      position: fixed; top: 70px; right: 20px; z-index: 9999;
       width: 340px; background: #1e293b; border-radius: 16px;
       box-shadow: 0 16px 48px rgba(0,0,0,0.5);
       border: 1px solid rgba(99,102,241,0.3);
       display: none; flex-direction: column; overflow: hidden;
-      animation: slideUpChat 0.25s ease;
+      animation: slideDownChat 0.25s ease;
     }
-    @keyframes slideUpChat {
-      from { opacity:0; transform: translateY(20px); }
+    @keyframes slideDownChat {
+      from { opacity:0; transform: translateY(-12px); }
       to   { opacity:1; transform: translateY(0); }
     }
     #support-panel.open { display: flex; }
@@ -146,11 +139,6 @@
     #chat-send:hover { background: #4f46e5; }
   </style>
 
-  <!-- Support Button -->
-  <button id="support-btn" onclick="toggleChat()" aria-label="Open live support chat" title="Live Support">
-    💬
-    <span id="support-badge">1</span>
-  </button>
 
   <!-- Chat Panel -->
   <div id="support-panel" role="dialog" aria-label="Support chat">
