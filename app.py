@@ -100,6 +100,30 @@ def index():
     return render_template("index.html", products=products, recommendations=recommendations, best_sellers=best_sellers)
 
 
+@app.route("/api/best-sellers")
+def api_best_sellers():
+    rows = query_db("""
+        SELECT p.*, COUNT(i.id) AS interaction_count
+        FROM products p
+        LEFT JOIN interactions i ON i.product_id = p.id
+        GROUP BY p.id
+        ORDER BY interaction_count DESC, p.rating DESC
+        LIMIT 6
+    """)
+    result = []
+    for r in rows:
+        result.append({
+            "id":                r["id"],
+            "name":              r["name"],
+            "price":             r["price"],
+            "image_url":         r["image_url"],
+            "category":          r["category"],
+            "rating":            r["rating"],
+            "interaction_count": r["interaction_count"] or 0,
+        })
+    return jsonify(result)
+
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     error = None

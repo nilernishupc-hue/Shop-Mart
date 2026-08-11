@@ -20,9 +20,126 @@
 
     <ul class="nav-links">
       <li><a href="{{ url_for('index') }}"    id="nav-home">Home</a></li>
+      <li id="nav-bestsellers-wrap" style="position:relative;">
+        <a href="#" id="nav-bestsellers" onclick="toggleBestSellers(event)"
+           style="display:flex;align-items:center;gap:5px;">
+          🏆 Best-Selling
+          <svg id="bs-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" style="transition:transform 0.2s;"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+
+        <!-- Dropdown panel -->
+        <div id="bestsellers-dropdown" style="
+          display:none;
+          position:absolute; top:calc(100% + 12px); left:50%;
+          transform:translateX(-50%);
+          width:320px; background:#1e293b;
+          border:1px solid rgba(99,102,241,0.3);
+          border-radius:16px;
+          box-shadow:0 20px 60px rgba(0,0,0,0.5);
+          z-index:9990; overflow:hidden;
+          animation:bsDropDown 0.2s ease;
+        ">
+          <!-- Header -->
+          <div style="
+            background:linear-gradient(135deg,#f59e0b,#ef4444);
+            padding:12px 16px;
+            display:flex;align-items:center;justify-content:space-between;
+          ">
+            <span style="font-size:0.9rem;font-weight:800;color:#fff;letter-spacing:0.02em;">🏆 Best-Selling Items</span>
+            <span style="
+              background:rgba(255,255,255,0.25);color:#fff;
+              font-size:0.65rem;font-weight:700;padding:2px 8px;
+              border-radius:999px;letter-spacing:0.06em;
+            ">TOP PICKS</span>
+          </div>
+          <!-- Product list injected by JS -->
+          <div id="bs-list" style="padding:8px;display:flex;flex-direction:column;gap:6px;max-height:380px;overflow-y:auto;">
+            <div style="padding:20px;text-align:center;color:#64748b;font-size:0.85rem;">Loading…</div>
+          </div>
+          <div style="padding:10px 16px;border-top:1px solid rgba(255,255,255,0.07);text-align:center;">
+            <a href="{{ url_for('products') }}" style="font-size:0.8rem;color:#6366f1;font-weight:600;text-decoration:none;">
+              View all products →
+            </a>
+          </div>
+        </div>
+      </li>
       <li><a href="{{ url_for('products') }}" id="nav-products">Products</a></li>
       <li><a href="{{ url_for('dashboard') }}" id="nav-dashboard">Model Dashboard</a></li>
     </ul>
+
+    <style>
+      @keyframes bsDropDown {
+        from { opacity:0; transform:translateX(-50%) translateY(-8px); }
+        to   { opacity:1; transform:translateX(-50%) translateY(0); }
+      }
+      .bs-item {
+        display:flex; gap:10px; align-items:center;
+        background:rgba(255,255,255,0.04);
+        border:1px solid rgba(255,255,255,0.06);
+        border-radius:10px; padding:8px 10px;
+        text-decoration:none; transition:all 0.18s; cursor:pointer;
+      }
+      .bs-item:hover {
+        background:rgba(99,102,241,0.12);
+        border-color:rgba(99,102,241,0.35);
+      }
+    </style>
+
+    <script>
+      let bsLoaded = false;
+      let bsOpen   = false;
+
+      function toggleBestSellers(e) {
+        e.preventDefault();
+        bsOpen = !bsOpen;
+        const dd  = document.getElementById('bestsellers-dropdown');
+        const chv = document.getElementById('bs-chevron');
+        dd.style.display  = bsOpen ? 'block' : 'none';
+        chv.style.transform = bsOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+        if (bsOpen && !bsLoaded) loadBestSellers();
+      }
+
+      function loadBestSellers() {
+        fetch('/api/best-sellers')
+          .then(r => r.json())
+          .then(data => {
+            bsLoaded = true;
+            const list = document.getElementById('bs-list');
+            const rankColors = ['linear-gradient(135deg,#f59e0b,#ef4444)','linear-gradient(135deg,#94a3b8,#64748b)','linear-gradient(135deg,#cd7c2f,#a85f23)'];
+            list.innerHTML = data.map((p, i) => `
+              <a href="/product/${p.id}" class="bs-item" id="bs-item-${p.id}">
+                <div style="
+                  min-width:22px;height:22px;border-radius:50%;flex-shrink:0;
+                  background:${rankColors[i] || 'rgba(99,102,241,0.45)'};
+                  display:flex;align-items:center;justify-content:center;
+                  font-size:0.68rem;font-weight:800;color:#fff;
+                ">${i+1}</div>
+                <img src="${p.image_url}" alt="${p.name}"
+                     style="width:42px;height:42px;object-fit:cover;border-radius:8px;flex-shrink:0;" />
+                <div style="min-width:0;flex:1;">
+                  <div style="font-size:0.78rem;font-weight:600;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</div>
+                  <div style="font-size:0.7rem;color:#f59e0b;font-weight:700;margin-top:2px;">🔥 ${p.interaction_count} sold</div>
+                </div>
+                <div style="font-size:0.8rem;color:#6366f1;font-weight:700;flex-shrink:0;">$${parseFloat(p.price).toFixed(2)}</div>
+              </a>
+            `).join('');
+          })
+          .catch(() => {
+            document.getElementById('bs-list').innerHTML =
+              '<div style="padding:16px;text-align:center;color:#ef4444;font-size:0.82rem;">Could not load items.</div>';
+          });
+      }
+
+      // Close when clicking outside
+      document.addEventListener('click', function(e) {
+        if (!document.getElementById('nav-bestsellers-wrap').contains(e.target)) {
+          document.getElementById('bestsellers-dropdown').style.display = 'none';
+          document.getElementById('bs-chevron').style.transform = 'rotate(0deg)';
+          bsOpen = false;
+        }
+      });
+    </script>
+
 
     <div class="nav-actions">
       {% if current_user %}
