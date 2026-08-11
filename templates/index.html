@@ -3,160 +3,201 @@
 
 {% block content %}
 
-<!-- ── Hero ─────────────────────────────────────────────────── -->
-<section class="hero" id="hero">
-  <div class="hero-glow hero-glow-1"></div>
-  <div class="hero-glow hero-glow-2"></div>
+<!-- ── Two-Column Layout ──────────────────────────────────────── -->
+<div id="home-layout" style="
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 0;
+  min-height: 100vh;
+  align-items: start;
+">
 
-
-  <h1>
-    Your Shopping, Made Smarter with<br/>
-    <span class="highlight">Shop Mart</span>
-  </h1>
-
-  <p>
-    Experience personalised shopping powered by Collaborative Filtering (SVD),
-    Content-Based Filtering (TF-IDF) and a Hybrid model — all with transparent explanations.
-  </p>
-
-  <div class="hero-cta">
-    <a href="{{ url_for('products') }}" class="btn btn-primary" id="hero-browse-btn" style="font-size:1rem;padding:14px 32px;">
-      🛍️ Browse Products
-    </a>
-    <a href="{{ url_for('dashboard') }}" class="btn btn-outline" id="hero-dashboard-btn" style="font-size:1rem;padding:14px 32px;">
-      📊 View Model Performance
-    </a>
-  </div>
-</section>
-
-<!-- ── Best-Selling Items ──────────────────────────────────── -->
-{% if best_sellers %}
-<section class="section" id="best-sellers-section" style="padding-top:0;">
-  <div class="section-header" id="best-sellers-header">
-    <h2 class="section-title" style="display:flex;align-items:center;gap:10px;">
-      <span style="background:linear-gradient(135deg,#f59e0b,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:1.6rem;">🏆</span>
-      Best-Selling Items
-      <span style="background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:999px;letter-spacing:0.05em;">TOP PICKS</span>
-    </h2>
-    <a href="{{ url_for('products') }}" class="section-link" id="bestsellers-view-all">View all →</a>
-  </div>
-
-  <!-- Scrollable row -->
-  <div id="best-sellers-grid" style="
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: var(--sp3);
-    margin-top: var(--sp3);
+  <!-- ════════════════════════════════════════════════════════ -->
+  <!-- LEFT SIDEBAR — Best-Selling Items                        -->
+  <!-- ════════════════════════════════════════════════════════ -->
+  {% if best_sellers %}
+  <aside id="best-sellers-sidebar" style="
+    background: rgba(15,23,42,0.85);
+    border-right: 1px solid rgba(99,102,241,0.18);
+    padding: 28px 16px;
+    position: sticky;
+    top: 64px;
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
   ">
-    {% for p in best_sellers %}
-    <div class="card" id="best-seller-card-{{ p.id }}" style="position:relative;">
-
-      <!-- Rank badge -->
+    <!-- Sidebar Title -->
+    <div style="margin-bottom:20px;">
       <div style="
-        position:absolute; top:10px; left:10px; z-index:2;
+        display:flex; align-items:center; gap:8px;
+        font-size:1rem; font-weight:800; color:#fff; letter-spacing:-0.3px;
+      ">
+        <span style="font-size:1.2rem;">🏆</span>
+        Best-Selling Items
+      </div>
+      <div style="
+        margin-top:6px;
         background:linear-gradient(135deg,#f59e0b,#ef4444);
-        color:#fff; border-radius:999px; padding:3px 10px;
-        font-size:0.7rem; font-weight:800; letter-spacing:0.04em;
-        box-shadow:0 2px 8px rgba(245,158,11,0.5);
-      ">#{{ loop.index }} Best Seller</div>
+        color:#fff; font-size:0.65rem; font-weight:700;
+        padding:2px 10px; border-radius:999px;
+        display:inline-block; letter-spacing:0.06em;
+      ">TOP PICKS</div>
+    </div>
 
-      <div class="card-img-wrap">
-        <img src="{{ p.image_url }}" alt="{{ p.name }}" loading="lazy" />
-        <span class="card-badge">{{ p.category }}</span>
-      </div>
-      <div class="card-body">
-        <div class="card-category">{{ p.category }}</div>
-        <a href="{{ url_for('product_detail', id=p.id) }}" class="card-name" id="bestseller-link-{{ p.id }}">{{ p.name }}</a>
-        <div class="card-stars">
-          {% for _ in range(p.rating|int) %}★{% endfor %}{% for _ in range(5 - p.rating|int) %}☆{% endfor %}
-          <span>({{ p.rating }})</span>
-        </div>
-        <!-- Sales count tag -->
+    <!-- Product List -->
+    <div style="display:flex;flex-direction:column;gap:12px;" id="best-sellers-list">
+      {% for p in best_sellers %}
+      <a href="{{ url_for('product_detail', id=p.id) }}"
+         id="sidebar-bestseller-{{ p.id }}"
+         style="
+           display:flex; gap:10px; align-items:center;
+           background:rgba(255,255,255,0.04);
+           border:1px solid rgba(255,255,255,0.07);
+           border-radius:12px; padding:10px;
+           text-decoration:none; transition:all 0.2s;
+           position:relative; overflow:hidden;
+         "
+         onmouseover="this.style.background='rgba(99,102,241,0.12)';this.style.borderColor='rgba(99,102,241,0.35)'"
+         onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.borderColor='rgba(255,255,255,0.07)'"
+      >
+        <!-- Rank number -->
         <div style="
-          margin-top:6px;
-          font-size:0.75rem; color:#f59e0b; font-weight:700;
-          display:flex; align-items:center; gap:4px;
-        ">
-          🔥 {{ (p.interaction_count or 0) }} sold
+          min-width:24px; height:24px; border-radius:50%;
+          background:{% if loop.index == 1 %}linear-gradient(135deg,#f59e0b,#ef4444){% elif loop.index == 2 %}linear-gradient(135deg,#94a3b8,#64748b){% elif loop.index == 3 %}linear-gradient(135deg,#cd7c2f,#a85f23){% else %}rgba(99,102,241,0.4){% endif %};
+          display:flex; align-items:center; justify-content:center;
+          font-size:0.7rem; font-weight:800; color:#fff;
+          flex-shrink:0;
+        ">{{ loop.index }}</div>
+
+        <!-- Thumbnail -->
+        <img src="{{ p.image_url }}" alt="{{ p.name }}"
+             style="width:46px;height:46px;object-fit:cover;border-radius:8px;flex-shrink:0;" />
+
+        <!-- Info -->
+        <div style="min-width:0;">
+          <div style="font-size:0.78rem;font-weight:600;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+            {{ p.name }}
+          </div>
+          <div style="font-size:0.7rem;color:#f59e0b;font-weight:700;margin-top:2px;">
+            🔥 {{ (p.interaction_count or 0) }} sold
+          </div>
+          <div style="font-size:0.78rem;color:#6366f1;font-weight:700;margin-top:2px;">
+            ${{ "%.2f"|format(p.price) }}
+          </div>
         </div>
-        <div class="card-price">${{ "%.2f"|format(p.price) }}</div>
-      </div>
+      </a>
+      {% endfor %}
     </div>
-    {% endfor %}
-  </div>
-</section>
-{% endif %}
 
-<!-- ── Personalised Recommendations ─────────────────────────── -->
-{% if current_user and recommendations %}
-<section class="section" id="recommendations-section">
-  <div class="section-header">
-    <h2 class="section-title">
-      ✨ Recommended for <span>{{ current_user.username }}</span>
-    </h2>
-    <a href="{{ url_for('products') }}" class="section-link" id="recs-view-more">View all →</a>
-  </div>
+    <a href="{{ url_for('products') }}" id="bestsellers-view-all"
+       style="display:block;text-align:center;margin-top:18px;font-size:0.8rem;color:#6366f1;font-weight:600;text-decoration:none;">
+      View all products →
+    </a>
+  </aside>
+  {% endif %}
 
-  <div class="product-grid" id="recommendations-grid">
-    {% for p in recommendations %}
-    <div class="card" id="rec-card-{{ p.id }}">
-      <div class="card-img-wrap">
-        <img src="{{ p.image_url }}" alt="{{ p.name }}" loading="lazy" />
-        <span class="card-badge">AI Pick</span>
+  <!-- ════════════════════════════════════════════════════════ -->
+  <!-- RIGHT MAIN CONTENT                                       -->
+  <!-- ════════════════════════════════════════════════════════ -->
+  <div id="home-main">
+
+    <!-- ── Hero ──────────────────────────────────────────────── -->
+    <section class="hero" id="hero" style="border-radius:0;">
+      <div class="hero-glow hero-glow-1"></div>
+      <div class="hero-glow hero-glow-2"></div>
+
+      <h1>
+        Your Shopping, Made Smarter with<br/>
+        <span class="highlight">Shop Mart</span>
+      </h1>
+
+      <p>
+        Experience personalised shopping powered by Collaborative Filtering (SVD),
+        Content-Based Filtering (TF-IDF) and a Hybrid model — all with transparent explanations.
+      </p>
+
+      <div class="hero-cta">
+        <a href="{{ url_for('products') }}" class="btn btn-primary" id="hero-browse-btn" style="font-size:1rem;padding:14px 32px;">
+          🛍️ Browse Products
+        </a>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline" id="hero-dashboard-btn" style="font-size:1rem;padding:14px 32px;">
+          📊 View Model Performance
+        </a>
       </div>
-      <div class="card-body">
-        <div class="card-category">{{ p.category }}</div>
-        <a href="{{ url_for('product_detail', id=p.id) }}" class="card-name" id="rec-product-{{ p.id }}">{{ p.name }}</a>
-        <div class="card-stars">
-          {% for _ in range(p.rating|int) %}★{% endfor %}{% for _ in range(5 - p.rating|int) %}☆{% endfor %}
-          <span>({{ p.rating }})</span>
+    </section>
+
+    <!-- ── Personalised Recommendations ─────────────────────── -->
+    {% if current_user and recommendations %}
+    <section class="section" id="recommendations-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          ✨ Recommended for <span>{{ current_user.username }}</span>
+        </h2>
+        <a href="{{ url_for('products') }}" class="section-link" id="recs-view-more">View all →</a>
+      </div>
+
+      <div class="product-grid" id="recommendations-grid">
+        {% for p in recommendations %}
+        <div class="card" id="rec-card-{{ p.id }}">
+          <div class="card-img-wrap">
+            <img src="{{ p.image_url }}" alt="{{ p.name }}" loading="lazy" />
+            <span class="card-badge">AI Pick</span>
+          </div>
+          <div class="card-body">
+            <div class="card-category">{{ p.category }}</div>
+            <a href="{{ url_for('product_detail', id=p.id) }}" class="card-name" id="rec-product-{{ p.id }}">{{ p.name }}</a>
+            <div class="card-stars">
+              {% for _ in range(p.rating|int) %}★{% endfor %}{% for _ in range(5 - p.rating|int) %}☆{% endfor %}
+              <span>({{ p.rating }})</span>
+            </div>
+            <div class="card-price">${{ "%.2f"|format(p.price) }}</div>
+            {% if p.explanation %}
+            <div class="explanation-tag">💡 {{ p.explanation }}</div>
+            {% endif %}
+          </div>
         </div>
-        <div class="card-price">${{ "%.2f"|format(p.price) }}</div>
-        {% if p.explanation %}
-        <div class="explanation-tag">💡 {{ p.explanation }}</div>
-        {% endif %}
+        {% endfor %}
       </div>
-    </div>
-    {% endfor %}
-  </div>
-</section>
-{% elif not current_user %}
-<section class="section">
-  <div class="empty-state" id="login-cta">
-    <div class="icon">🔐</div>
-    <h3>Get Personalised Recommendations</h3>
-    <p>Login to see AI-powered recommendations tailored just for you.</p>
-    <a href="{{ url_for('login') }}" class="btn btn-primary" id="empty-login-btn">Login Now</a>
-  </div>
-</section>
-{% endif %}
-
-<!-- ── Trending Products ─────────────────────────────────────── -->
-<section class="section" id="trending-section">
-  <div class="section-header">
-    <h2 class="section-title">🔥 Trending Products</h2>
-    <a href="{{ url_for('products') }}" class="section-link" id="trending-view-all">View all →</a>
-  </div>
-
-  <div class="product-grid" id="trending-grid">
-    {% for p in products %}
-    <div class="card" id="trending-card-{{ p.id }}">
-      <div class="card-img-wrap">
-        <img src="{{ p.image_url }}" alt="{{ p.name }}" loading="lazy" />
+    </section>
+    {% elif not current_user %}
+    <section class="section">
+      <div class="empty-state" id="login-cta">
+        <div class="icon">🔐</div>
+        <h3>Get Personalised Recommendations</h3>
+        <p>Login to see AI-powered recommendations tailored just for you.</p>
+        <a href="{{ url_for('login') }}" class="btn btn-primary" id="empty-login-btn">Login Now</a>
       </div>
-      <div class="card-body">
-        <div class="card-category">{{ p.category }}</div>
-        <a href="{{ url_for('product_detail', id=p.id) }}" class="card-name" id="trending-product-{{ p.id }}">{{ p.name }}</a>
-        <div class="card-stars">
-          {% for _ in range(p.rating|int) %}★{% endfor %}{% for _ in range(5 - p.rating|int) %}☆{% endfor %}
-          <span>({{ p.rating }})</span>
+    </section>
+    {% endif %}
+
+    <!-- ── Trending Products ──────────────────────────────────── -->
+    <section class="section" id="trending-section">
+      <div class="section-header">
+        <h2 class="section-title">🔥 Trending Products</h2>
+        <a href="{{ url_for('products') }}" class="section-link" id="trending-view-all">View all →</a>
+      </div>
+
+      <div class="product-grid" id="trending-grid">
+        {% for p in products %}
+        <div class="card" id="trending-card-{{ p.id }}">
+          <div class="card-img-wrap">
+            <img src="{{ p.image_url }}" alt="{{ p.name }}" loading="lazy" />
+          </div>
+          <div class="card-body">
+            <div class="card-category">{{ p.category }}</div>
+            <a href="{{ url_for('product_detail', id=p.id) }}" class="card-name" id="trending-product-{{ p.id }}">{{ p.name }}</a>
+            <div class="card-stars">
+              {% for _ in range(p.rating|int) %}★{% endfor %}{% for _ in range(5 - p.rating|int) %}☆{% endfor %}
+              <span>({{ p.rating }})</span>
+            </div>
+            <div class="card-price">${{ "%.2f"|format(p.price) }}</div>
+          </div>
         </div>
-        <div class="card-price">${{ "%.2f"|format(p.price) }}</div>
+        {% endfor %}
       </div>
-    </div>
-    {% endfor %}
-  </div>
-</section>
+    </section>
+
+  </div><!-- end #home-main -->
+</div><!-- end #home-layout -->
 
 <!-- Fixed bottom-right developer credit -->
 <div id="developer-credit" style="
@@ -178,5 +219,28 @@
   box-shadow: 0 4px 20px rgba(99,102,241,0.25);
   white-space: nowrap;
 ">👨‍💻 Developed by &nbsp;<span style="color:#fff;">MD RAISUL ISLAM</span></div>
+
+<!-- Responsive: collapse sidebar on mobile -->
+<style>
+  @media (max-width: 768px) {
+    #home-layout {
+      grid-template-columns: 1fr !important;
+    }
+    #best-sellers-sidebar {
+      position: static !important;
+      max-height: none !important;
+      border-right: none !important;
+      border-bottom: 1px solid rgba(99,102,241,0.18);
+    }
+    #best-sellers-list {
+      flex-direction: row !important;
+      overflow-x: auto;
+      flex-wrap: nowrap;
+    }
+    #best-sellers-list a {
+      min-width: 160px;
+    }
+  }
+</style>
 
 {% endblock %}
