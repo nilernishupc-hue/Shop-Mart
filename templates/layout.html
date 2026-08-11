@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AI-Powered Personalised Recommendation System – MSc Research Prototype demonstrating Collaborative Filtering, Content-Based Filtering and Hybrid models." />
+  <title>{% block title %}Shop Mart{% endblock %} | MSc Research Prototype</title>
+  <link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='images/logo.jpg') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- ── Navigation ────────────────────────────────────────── -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <a href="{{ url_for('index') }}" class="nav-brand" id="nav-logo" style="display:flex; align-items:center; gap:10px; text-decoration:none;">
+      <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Shop Mart Logo" style="width:38px; height:38px; border-radius:8px; object-fit:cover; border:1px solid rgba(255,255,255,0.2); shadow:0 2px 8px rgba(0,0,0,0.2);" />
+      <span style="font-size:1.35rem; font-weight:800; color:var(--white); letter-spacing:-0.5px;">Shop<span style="color:var(--soft-blue);">Mart</span></span>
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="{{ url_for('index') }}"    id="nav-home">Home</a></li>
+      <li><a href="{{ url_for('products') }}" id="nav-products">Products</a></li>
+      <li><a href="{{ url_for('dashboard') }}" id="nav-dashboard">Model Dashboard</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      {% if current_user %}
+        <a href="{{ url_for('cart') }}" class="btn btn-outline" id="nav-cart" style="position:relative; display:flex; align-items:center; gap:6px;">
+          🛒 Cart
+          <span id="cart-badge" style="background:var(--sunset); color:var(--white); border-radius:50%; width:20px; height:20px; display:{% if cart_count > 0 %}inline-flex{% else %}none{% endif %}; align-items:center; justify-content:center; font-size:.75rem; font-weight:bold; position:absolute; top:-8px; right:-8px; border:2px solid var(--navy-dark);">{{ cart_count }}</span>
+        </a>
+        <a href="{{ url_for('profile') }}" class="btn btn-outline" id="nav-profile">
+          👤 {{ current_user.username }}
+        </a>
+        <a href="{{ url_for('logout') }}" class="btn btn-primary" id="nav-logout">Logout</a>
+      {% else %}
+        <a href="{{ url_for('login') }}" class="btn btn-outline" id="nav-cart-guest" style="position:relative; display:flex; align-items:center; gap:6px;">
+          🛒 Cart
+        </a>
+        <a href="{{ url_for('login') }}" class="btn btn-outline" id="nav-login">Login</a>
+        <a href="{{ url_for('register') }}" class="btn btn-primary" id="nav-register">Register</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <!-- ── Page Content ──────────────────────────────────────── -->
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- ── Footer ────────────────────────────────────────────── -->
+  <footer>
+    <p>
+      MSc Research Prototype &mdash;
+      <strong style="color:rgba(255,255,255,.8)">AI-Powered Personalised Recommendation System</strong>
+      &mdash; Ulster University
+    </p>
+  </footer>
+
+  <!-- Floating Toast Notifications -->
+  <div id="toast-container" style="position: fixed; bottom: 24px; right: 24px; z-index: 10000; display: flex; flex-direction: column; gap: var(--sp2);"></div>
+
+  <script>
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+      
+      const toast = document.createElement('div');
+      toast.style.background = type === 'success' ? 'var(--green-500, #2ecc71)' : 'var(--sunset, #e74c3c)';
+      toast.style.color = '#fff';
+      toast.style.padding = '12px 24px';
+      toast.style.borderRadius = 'var(--radius, 8px)';
+      toast.style.boxShadow = 'var(--shadow, 0 4px 12px rgba(0,0,0,0.15))';
+      toast.style.fontSize = '0.9rem';
+      toast.style.fontWeight = '600';
+      toast.style.minWidth = '220px';
+      toast.style.transition = 'all 0.3s ease';
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(20px)';
+      toast.style.display = 'flex';
+      toast.style.alignItems = 'center';
+      toast.style.gap = '8px';
+      
+      const icon = type === 'success' ? '✅' : '❌';
+      toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+      
+      container.appendChild(toast);
+      
+      // Force repaint
+      toast.offsetHeight;
+      
+      // Animate in
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateY(0)';
+      
+      // Animate out and remove
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-20px)';
+        setTimeout(() => {
+          toast.remove();
+        }, 300);
+      }, 3000);
+    }
+  </script>
+</body>
+</html>

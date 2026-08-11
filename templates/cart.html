@@ -1,0 +1,320 @@
+{% extends "layout.html" %}
+{% block title %}Shopping Cart - Shop Mart{% endblock %}
+
+{% block content %}
+<section class="section" id="cart-page">
+  <div class="section-header">
+    <h1 class="section-title">🛒 Shopping Cart</h1>
+    <span style="font-size:.9rem;color:var(--text-muted);" id="cart-summary-text">Review your selected items</span>
+  </div>
+
+  <div id="cart-container" style="display:{% if items %}grid{% else %}none{% endif %}; grid-template-columns: 2fr 1fr; gap: var(--sp4); margin-top: var(--sp3); align-items: start;">
+    
+    <!-- Left Column: Items List -->
+    <div style="display: flex; flex-direction: column; gap: var(--sp2);">
+      
+      <!-- Free Shipping Meter (Temu/Shein style) -->
+      <div style="background: var(--white); padding: var(--sp3); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--grey-100);" id="shipping-tracker-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <span style="font-weight: 600; font-size: .95rem; color: var(--midnight);" id="shipping-status-title">
+            {% if needed_for_free > 0 %}
+              ⚡ Add <strong style="color:var(--sunset);">${{ "%.2f"|format(needed_for_free) }}</strong> more for <strong>FREE SHIPPING</strong>!
+            {% else %}
+              🎉 You qualify for <strong>FREE SHIPPING</strong>!
+            {% endif %}
+          </span>
+          <span style="font-size: .8rem; color: var(--text-muted);">Threshold: ${{ free_shipping_threshold }}</span>
+        </div>
+        <div style="background: var(--grey-200); height: 10px; border-radius: 5px; overflow: hidden; width: 100%;">
+          <div id="shipping-progress-bar" style="background: linear-gradient(90deg, var(--soft-blue) 0%, var(--green-500) 100%); height: 100%; width: {{ shipping_progress }}%; transition: width 0.4s ease;"></div>
+        </div>
+      </div>
+
+      <!-- Items Grid -->
+      <div style="background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--grey-100); overflow: hidden;">
+        <div style="padding: var(--sp3); border-bottom: 1.5px solid var(--grey-100); font-weight: 700; color: var(--midnight); display: grid; grid-template-columns: 3fr 1fr 1fr; font-size: .9rem;">
+          <span>Product Details</span>
+          <span style="text-align: center;">Quantity</span>
+          <span style="text-align: right;">Total</span>
+        </div>
+        
+        <div id="cart-items-list">
+          {% for item in items %}
+          <div id="cart-row-{{ item.product_id }}" style="padding: var(--sp3); border-bottom: 1px solid var(--grey-100); display: grid; grid-template-columns: 3fr 1fr 1fr; align-items: center; transition: background 0.2s;">
+            <!-- Product detail block -->
+            <div style="display: flex; gap: var(--sp2); align-items: center;">
+              <div style="width: 70px; height: 70px; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--grey-200); flex-shrink: 0;">
+                <img src="{{ item.image_url }}" alt="{{ item.name }}" style="width: 100%; height: 100%; object-fit: cover;" />
+              </div>
+              <div>
+                <a href="{{ url_for('product_detail', id=item.product_id) }}" style="font-weight: 600; color: var(--midnight); font-size: .95rem; text-decoration: none; display: block;" class="hover-underline">{{ item.name }}</a>
+                <span style="font-size: .8rem; color: var(--text-muted); display: block; margin-top: 2px;">Category: {{ item.category }}</span>
+                <span style="font-size: .85rem; font-weight: 700; color: var(--text-muted); display: block; margin-top: 4px;">${{ "%.2f"|format(item.price) }}</span>
+              </div>
+            </div>
+            
+            <!-- Quantity adjust block -->
+            <div style="display: flex; flex-direction: column; align-items: center; gap: var(--sp1);">
+              <div style="display: inline-flex; align-items: center; border: 1.5px solid var(--grey-300); border-radius: var(--radius-sm); overflow: hidden; background: var(--grey-100); height: 32px;">
+                <button type="button" onclick="updateQty({{ item.product_id }}, -1)" style="border:none; background:transparent; width:28px; height:100%; font-size:1rem; cursor:pointer; font-weight:bold; color:var(--midnight);">-</button>
+                <input type="text" id="qty-{{ item.product_id }}" value="{{ item.quantity }}" readonly style="width: 32px; text-align:center; border:none; background:transparent; font-weight:600; font-size:.9rem; color:var(--midnight);" />
+                <button type="button" onclick="updateQty({{ item.product_id }}, 1)" style="border:none; background:transparent; width:28px; height:100%; font-size:1rem; cursor:pointer; font-weight:bold; color:var(--midnight);">+</button>
+              </div>
+              <button type="button" onclick="removeCartItem({{ item.product_id }})" style="background: none; border: none; color: var(--sunset); font-size: .8rem; cursor: pointer; font-weight: 600;">Remove</button>
+            </div>
+            
+            <!-- Total price block -->
+            <div style="text-align: right; font-weight: 700; color: var(--midnight); font-size: 1.05rem;" id="row-total-{{ item.product_id }}">
+              ${{ "%.2f"|format(item.price * item.quantity) }}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Order Summary Card -->
+    <div style="display: flex; flex-direction: column; gap: var(--sp3); position: sticky; top: 20px;">
+      <div style="background: var(--white); padding: var(--sp3); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--grey-100);">
+        <h3 style="color: var(--midnight); margin-bottom: var(--sp2); font-weight: 700; border-bottom: 1.5px solid var(--grey-100); padding-bottom: 10px; font-size: 1.1rem;">Order Summary</h3>
+        
+        <!-- Summary Prices -->
+        <div style="display: flex; flex-direction: column; gap: var(--sp1.5); margin-bottom: var(--sp2);">
+          <div style="display: flex; justify-content: space-between; font-size: .95rem; color: var(--text-muted);">
+            <span>Subtotal</span>
+            <span id="summary-subtotal" style="color:var(--midnight); font-weight:600;">${{ "%.2f"|format(subtotal) }}</span>
+          </div>
+          
+          <div style="display: flex; justify-content: space-between; font-size: .95rem; color: var(--text-muted); display: none;" id="coupon-row">
+            <span>Discount (<strong id="coupon-percent">0%</strong>)</span>
+            <span id="summary-discount" style="color:var(--green-500); font-weight:600;">-$0.00</span>
+          </div>
+          
+          <div style="display: flex; justify-content: space-between; font-size: .95rem; color: var(--text-muted);">
+            <span>Shipping</span>
+            <span id="summary-shipping" style="color:var(--midnight); font-weight:600;">
+              {% if shipping_cost == 0 %}FREE{% else %}${{ "%.2f"|format(shipping_cost) }}{% endif %}
+            </span>
+          </div>
+          
+          <div style="display: flex; justify-content: space-between; font-size: .95rem; color: var(--text-muted);">
+            <span>Estimated Tax (8%)</span>
+            <span id="summary-tax" style="color:var(--midnight); font-weight:600;">${{ "%.2f"|format(tax) }}</span>
+          </div>
+          
+          <hr style="border: 0; border-top: 1.5px solid var(--grey-100); margin: var(--sp1) 0;" />
+          
+          <div style="display: flex; justify-content: space-between; font-size: 1.15rem; font-weight: 800; color: var(--midnight);">
+            <span>Total</span>
+            <span id="summary-total">${{ "%.2f"|format(subtotal + shipping_cost + tax) }}</span>
+          </div>
+        </div>
+
+        <!-- Coupon input -->
+        <div style="margin-bottom: var(--sp3);">
+          <div style="display: flex; gap: var(--sp1.5);">
+            <input type="text" id="coupon-input" class="form-input" placeholder="Promo Code (OFF20)" style="margin-bottom:0; text-transform: uppercase;" />
+            <button type="button" onclick="applyCoupon()" class="btn btn-outline" style="padding: 0 16px; font-size: .9rem; margin-bottom:0;">Apply</button>
+          </div>
+          <span id="coupon-message" style="display:block; font-size:.8rem; margin-top:4px; font-weight:600;"></span>
+        </div>
+
+        <!-- Proceed to Checkout Button -->
+        <a href="{{ url_for('checkout') }}" class="btn btn-primary btn-full" style="height: 48px; font-size: 1rem; font-weight: 700; margin-bottom: var(--sp2); display:flex; align-items:center; justify-content:center; text-decoration:none;">
+          🔒 Proceed to Checkout
+        </a>
+
+        <!-- Payment Badges -->
+        <div style="text-align: center;">
+          <div style="font-size: .75rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 600;">SECURE PAYMENTS</div>
+          <div style="display: flex; justify-content: center; gap: 8px; font-size: 1.5rem; opacity: 0.7;">
+            💳 🏦 🌐 
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div id="cart-empty-state" class="empty-state" style="display:{% if items %}none{% else %}block{% endif %}; padding: var(--sp6) var(--sp3); margin-top: var(--sp3);">
+    <div class="icon" style="font-size: 4rem; margin-bottom: var(--sp2);">🛍️</div>
+    <h2 style="color: var(--midnight); font-weight: 700; margin-bottom: 6px; font-size: 1.3rem;">Your cart is empty</h2>
+    <p style="color: var(--text-muted); margin-bottom: var(--sp3); font-size: .95rem;">Add some high-quality items and start receiving custom SVD Symmetrical recommendations!</p>
+    <a href="{{ url_for('products') }}" class="btn btn-primary" style="padding: 10px 24px; font-size: .9rem;">Shop Now</a>
+  </div>
+</section>
+
+<script>
+  let activeDiscountPercent = 0;
+
+  function updateQty(productId, diff) {
+    const qtyInput = document.getElementById(`qty-${productId}`);
+    let qty = parseInt(qtyInput.value) + diff;
+    if (qty < 1) return;
+    if (qty > 99) return;
+    
+    qtyInput.value = qty;
+    
+    fetch('/cart/update', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        product_id: productId,
+        quantity: qty
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data && data.success) {
+        // Update item row total in UI
+        const rowPriceText = document.querySelector(`#cart-row-${productId} span[style*="font-weight: 700"]`).innerText;
+        const price = parseFloat(rowPriceText.replace('$', ''));
+        document.getElementById(`row-total-${productId}`).innerText = `$${(price * qty).toFixed(2)}`;
+        
+        // Recalculate totals
+        updateSummaryTotals(data);
+      } else if (data && data.error) {
+        showToast(data.error, "error");
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      showToast("Error updating quantity", "error");
+    });
+  }
+
+  function removeCartItem(productId) {
+    fetch('/cart/remove', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        product_id: productId
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data && data.success) {
+        showToast("Item removed from Cart");
+        
+        // Delete row in UI
+        const row = document.getElementById(`cart-row-${productId}`);
+        row.remove();
+        
+        // If empty
+        if (data.cart_count === 0) {
+          document.getElementById('cart-container').style.display = 'none';
+          document.getElementById('cart-empty-state').style.display = 'block';
+        }
+        
+        // Recalculate totals
+        updateSummaryTotals(data);
+      } else if (data && data.error) {
+        showToast(data.error, "error");
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      showToast("Error removing item", "error");
+    });
+  }
+
+  function updateSummaryTotals(data) {
+    // Update badge in navbar
+    const badge = document.getElementById('cart-badge');
+    if (badge) {
+      badge.innerText = data.cart_count;
+      badge.style.display = data.cart_count > 0 ? 'inline-flex' : 'none';
+    }
+    
+    // Subtotal
+    document.getElementById('summary-subtotal').innerText = `$${data.subtotal.toFixed(2)}`;
+    
+    // Discount calculations
+    let discountAmount = 0.0;
+    if (activeDiscountPercent > 0) {
+      discountAmount = data.subtotal * (activeDiscountPercent / 100);
+      document.getElementById('summary-discount').innerText = `-$${discountAmount.toFixed(2)}`;
+    }
+    
+    // Shipping
+    let finalShipping = data.shipping_cost;
+    const shippingSpan = document.getElementById('summary-shipping');
+    if (finalShipping === 0) {
+      shippingSpan.innerText = 'FREE';
+    } else {
+      shippingSpan.innerText = `$${finalShipping.toFixed(2)}`;
+    }
+    
+    // Tax
+    const tax = roundToTwo((data.subtotal - discountAmount) * 0.08);
+    document.getElementById('summary-tax').innerText = `$${tax.toFixed(2)}`;
+    
+    // Total
+    const finalTotal = data.subtotal - discountAmount + finalShipping + tax;
+    document.getElementById('summary-total').innerText = `$${finalTotal.toFixed(2)}`;
+    
+    // Shipping tracker card updates
+    const bar = document.getElementById('shipping-progress-bar');
+    const title = document.getElementById('shipping-status-title');
+    if (bar && title) {
+      bar.style.width = `${data.shipping_progress}%`;
+      if (data.needed_for_free > 0) {
+        title.innerHTML = `⚡ Add <strong style="color:var(--sunset);">$${data.needed_for_free.toFixed(2)}</strong> more for <strong>FREE SHIPPING</strong>!`;
+      } else {
+        title.innerHTML = `🎉 You qualify for <strong>FREE SHIPPING</strong>!`;
+      }
+    }
+  }
+
+  function applyCoupon() {
+    const input = document.getElementById('coupon-input').value.trim().toUpperCase();
+    const message = document.getElementById('coupon-message');
+    const discountRow = document.getElementById('coupon-row');
+    
+    if (input === 'OFF20') {
+      activeDiscountPercent = 20;
+      message.style.color = 'var(--green-500)';
+      message.innerText = 'Coupon OFF20 applied! 20% discount added.';
+      discountRow.style.display = 'flex';
+      document.getElementById('coupon-percent').innerText = '20%';
+    } else if (input === 'WELCOME10') {
+      activeDiscountPercent = 10;
+      message.style.color = 'var(--green-500)';
+      message.innerText = 'Coupon WELCOME10 applied! 10% discount added.';
+      discountRow.style.display = 'flex';
+      document.getElementById('coupon-percent').innerText = '10%';
+    } else {
+      activeDiscountPercent = 0;
+      message.style.color = 'var(--sunset)';
+      message.innerText = 'Invalid coupon code.';
+      discountRow.style.display = 'none';
+    }
+    
+    // Trigger total updates using current values
+    const subtotalText = document.getElementById('summary-subtotal').innerText;
+    const subtotal = parseFloat(subtotalText.replace('$', ''));
+    
+    const shippingText = document.getElementById('summary-shipping').innerText;
+    const shipping = shippingText === 'FREE' ? 0.0 : parseFloat(shippingText.replace('$', ''));
+    
+    const discountAmount = subtotal * (activeDiscountPercent / 100);
+    if (activeDiscountPercent > 0) {
+      document.getElementById('summary-discount').innerText = `-$${discountAmount.toFixed(2)}`;
+    }
+    
+    const tax = roundToTwo((subtotal - discountAmount) * 0.08);
+    document.getElementById('summary-tax').innerText = `$${tax.toFixed(2)}`;
+    
+    const total = subtotal - discountAmount + shipping + tax;
+    document.getElementById('summary-total').innerText = `$${total.toFixed(2)}`;
+  }
+
+  function roundToTwo(num) {
+    return +(Math.round(num + "e+2")  + "e-2");
+  }
+</script>
+{% endblock %}

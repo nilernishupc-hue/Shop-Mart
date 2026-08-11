@@ -1,0 +1,261 @@
+{% extends "layout.html" %}
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+<section class="section" id="product-detail-page">
+
+  <!-- Product Detail Card -->
+  <div class="detail-wrap" id="product-detail">
+    <img src="{{ product.image_url }}" alt="{{ product.name }}" class="detail-img" id="product-image" />
+
+    <div class="detail-body">
+      <div class="detail-category" id="product-category">{{ product.category }}</div>
+      <h1 class="detail-name" id="product-name">{{ product.name }}</h1>
+
+      <div class="card-stars" style="font-size:1.1rem;" id="product-rating">
+        {% for _ in range(product.rating|int) %}★{% endfor %}{% for _ in range(5 - product.rating|int) %}☆{% endfor %}
+        &nbsp;<strong>{{ product.rating }}</strong> / 5
+      </div>
+
+      <div class="detail-price" id="product-price">${{ "%.2f"|format(product.price) }}</div>
+
+      <!-- Quantity Selector & Add to Cart -->
+      <div style="display: flex; align-items: center; gap: var(--sp2); margin-top: var(--sp3); margin-bottom: var(--sp3);">
+        <div style="display: inline-flex; align-items: center; border: 1.5px solid var(--grey-300); border-radius: var(--radius-sm); overflow: hidden; background: var(--grey-100); height: 42px;">
+          <button type="button" onclick="decrementQty()" style="border:none; background:transparent; width:36px; height:100%; font-size:1.1rem; cursor:pointer; font-weight:bold; color:var(--midnight); transition:background 0.2s;" id="qty-minus">−</button>
+          <input type="text" id="cart-quantity" value="1" readonly style="width: 40px; text-align:center; border:none; background:transparent; font-weight:600; font-size:1rem; color:var(--midnight);" />
+          <button type="button" onclick="incrementQty()" style="border:none; background:transparent; width:36px; height:100%; font-size:1.1rem; cursor:pointer; font-weight:bold; color:var(--midnight); transition:background 0.2s;" id="qty-plus">+</button>
+        </div>
+        
+        <button type="button" onclick="addToCart({{ product.id }})" class="btn btn-primary" style="flex-grow:1; display:flex; align-items:center; justify-content:center; gap:8px; height: 42px; margin-bottom:0;" id="add-to-cart-btn">
+          🛒 Add to Cart
+        </button>
+      </div>
+
+      <script>
+        function incrementQty() {
+          const qtyInput = document.getElementById('cart-quantity');
+          let val = parseInt(qtyInput.value);
+          if (val < 99) qtyInput.value = val + 1;
+        }
+        function decrementQty() {
+          const qtyInput = document.getElementById('cart-quantity');
+          let val = parseInt(qtyInput.value);
+          if (val > 1) qtyInput.value = val - 1;
+        }
+        function addToCart(productId) {
+          const qtyInput = document.getElementById('cart-quantity');
+          const quantity = parseInt(qtyInput.value);
+          
+          fetch('/cart/add', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              product_id: productId,
+              quantity: quantity
+            })
+          })
+          .then(response => {
+            if (response.status === 401) {
+              showToast("Please log in to add items to your cart", "error");
+              setTimeout(() => {
+                window.location.href = "{{ url_for('login') }}";
+              }, 1200);
+              return;
+            }
+            return response.json();
+          })
+          .then(data => {
+            if (data && data.success) {
+              showToast("Added to Cart successfully!");
+              const badge = document.getElementById('cart-badge');
+              if (badge) {
+                badge.innerText = data.cart_count;
+                badge.style.display = data.cart_count > 0 ? 'inline-flex' : 'none';
+              }
+            } else if (data && data.error) {
+              showToast(data.error, "error");
+            }
+          })
+          .catch(err => {
+            console.error(err);
+            showToast("Error adding to cart", "error");
+          });
+        }
+      </script>
+
+      <hr class="detail-divider" />
+
+      <p class="detail-desc" id="product-description">{{ product.description }}</p>
+
+      <hr class="detail-divider" />
+
+      {% if current_user %}
+      <div>
+        <p style="font-weight:600;margin-bottom:var(--sp2);color:var(--midnight);">⭐ Submit a Review</p>
+        <form method="POST" action="{{ url_for('submit_review', product_id=product.id) }}" enctype="multipart/form-data" style="display:flex; flex-direction:column; gap: var(--sp2);" id="review-form">
+          <div style="display:grid; grid-template-columns: 180px 1fr; gap:var(--sp2);">
+            <select name="rating" class="form-select" id="rating-select" required>
+              <option value="">Rating…</option>
+              <option value="5">⭐⭐⭐⭐⭐ – Excellent</option>
+              <option value="4">⭐⭐⭐⭐ – Good</option>
+              <option value="3">⭐⭐⭐ – Average</option>
+              <option value="2">⭐⭐ – Poor</option>
+              <option value="1">⭐ – Terrible</option>
+            </select>
+            
+            <div style="display:flex; gap: var(--sp1); align-items: center;">
+              <!-- File upload input for customer review photo -->
+              <label for="review-image-file" class="btn btn-outline" style="margin-bottom:0; cursor:pointer; font-size:.85rem; padding: 0 14px; height:42px; display:inline-flex; align-items:center; gap:6px; white-space:nowrap;" id="upload-photo-label">
+                📷 Upload Photo
+              </label>
+              <input
+                type="file"
+                name="review_image"
+                id="review-image-file"
+                accept="image/*"
+                style="display:none;"
+                onchange="previewReviewPhoto(event)"
+              />
+              
+              <span style="font-size:.8rem; color:var(--text-muted);">or</span>
+              
+              <input
+                type="text"
+                name="review_image_url"
+                class="form-input"
+                placeholder="Paste Photo URL"
+                id="review-image-input"
+                style="margin-bottom:0; height:42px;"
+              />
+            </div>
+          </div>
+
+          <!-- Selected photo preview thumbnail container -->
+          <div id="photo-preview-container" style="display:none; align-items:center; gap:var(--sp2); background:var(--grey-100); padding:var(--sp1.5); border-radius:var(--radius-sm); border:1px dashed var(--grey-300);">
+            <img id="photo-preview-img" src="" alt="Photo Preview" style="width:50px; height:50px; object-fit:cover; border-radius:var(--radius-sm);" />
+            <span id="photo-preview-name" style="font-size:.85rem; color:var(--midnight); font-weight:600;">filename.jpg</span>
+            <button type="button" onclick="clearReviewPhoto()" style="background:none; border:none; color:var(--sunset); cursor:pointer; font-size:.85rem; font-weight:bold; margin-left:auto;">Remove</button>
+          </div>
+
+          <textarea
+            name="review_text"
+            class="form-input"
+            rows="3"
+            placeholder="Write your product review here…"
+            required
+            id="review-text-input"
+            style="resize:vertical; min-height:80px;"
+          ></textarea>
+          <button type="submit" class="btn btn-primary" style="align-self:flex-start;" id="submit-review-btn">Submit Review</button>
+        </form>
+
+        <script>
+          function previewReviewPhoto(event) {
+            const input = event.target;
+            if (input.files && input.files[0]) {
+              const file = input.files[0];
+              const reader = new FileReader();
+              reader.onload = function(e) {
+                document.getElementById('photo-preview-img').src = e.target.result;
+                document.getElementById('photo-preview-name').innerText = file.name;
+                document.getElementById('photo-preview-container').style.display = 'flex';
+                document.getElementById('review-image-input').value = '';
+              }
+              reader.readAsDataURL(file);
+            }
+          }
+          function clearReviewPhoto() {
+            document.getElementById('review-image-file').value = '';
+            document.getElementById('photo-preview-container').style.display = 'none';
+          }
+        </script>
+      </div>
+      {% else %}
+      <div class="hint-box">
+        <a href="{{ url_for('login') }}" style="color:var(--soft-blue);font-weight:600;">Login</a>
+        to review this product and receive personalised recommendations.
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  <!-- ── Customer Reviews ──────────────────────────────────────── -->
+  <div style="margin-top: var(--sp5);" id="reviews-section">
+    <div class="section-header">
+      <h2 class="section-title">💬 Customer Reviews</h2>
+      <span style="font-size: .85rem; color: var(--text-muted);">{{ reviews|length }} reviews for this item</span>
+    </div>
+    
+    {% if reviews %}
+      <div style="display: flex; flex-direction: column; gap: var(--sp3); margin-top: var(--sp3);" id="reviews-feed">
+        {% for r in reviews %}
+          <div style="background: var(--white); padding: var(--sp3); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--grey-100);" id="review-card-{{ loop.index }}">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--sp1);">
+              <div style="display: flex; align-items: center; gap: var(--sp2);">
+                <div class="avatar" style="width: 40px; height: 40px; font-size: 1rem; flex-shrink: 0;">{{ r.username[0]|upper }}</div>
+                <div>
+                  <strong style="color: var(--midnight); font-size: .95rem; display: block;">{{ r.username }}</strong>
+                  <span style="font-size: .8rem; color: var(--text-muted); display: block;">Verified Purchaser</span>
+                </div>
+              </div>
+              <div style="text-align: right;">
+                <div class="card-stars" style="font-size: .9rem; margin-bottom: 0;">
+                  {% for _ in range(r.rating) %}★{% endfor %}{% for _ in range(5 - r.rating) %}☆{% endfor %}
+                </div>
+                <span style="font-size: .8rem; color: var(--text-muted);">{{ r.timestamp[:10] }}</span>
+              </div>
+            </div>
+            
+            <p style="color: var(--text-muted); font-size: .95rem; margin-top: var(--sp1); line-height: 1.6;">{{ r.review_text }}</p>
+            
+            {% if r.review_image_url %}
+              <div style="margin-top: var(--sp2); max-width: 280px; overflow: hidden; border-radius: var(--radius-sm); border: 1.5px solid var(--grey-100);" id="review-photo-wrap-{{ loop.index }}">
+                <img src="{{ r.review_image_url }}" alt="Review Photo for {{ product.name }}" style="width: 100%; height: auto; display: block;" loading="lazy" />
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state" style="padding: var(--sp4) var(--sp3); border-radius: var(--radius); border: 1.5px dashed var(--grey-400); background: transparent; box-shadow: none;" id="empty-reviews">
+        <div class="icon" style="font-size: 2rem;">💬</div>
+        <p style="color: var(--text-muted); font-size: .95rem; margin-bottom: 0;">No reviews yet. Be the first to review this product!</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- "You May Also Like" – Content-Based Recommendations -->
+  {% if related_products %}
+  <div class="section-header" id="related-header" style="margin-top:var(--sp5);">
+    <h2 class="section-title">🤝 You May Also Like</h2>
+    <span style="font-size:.85rem;color:var(--text-muted);">Powered by Content-Based Filtering (TF-IDF)</span>
+  </div>
+
+  <div class="product-grid" id="related-grid">
+    {% for rp in related_products %}
+    <div class="card" id="related-card-{{ rp.id }}">
+      <div class="card-img-wrap">
+        <img src="{{ rp.image_url }}" alt="{{ rp.name }}" loading="lazy" />
+        <span class="card-badge">Similar</span>
+      </div>
+      <div class="card-body">
+        <div class="card-category">{{ rp.category }}</div>
+        <a href="{{ url_for('product_detail', id=rp.id) }}" class="card-name" id="related-product-{{ rp.id }}">{{ rp.name }}</a>
+        <div class="card-stars">
+          {% for _ in range(rp.rating|int) %}★{% endfor %}{% for _ in range(5 - rp.rating|int) %}☆{% endfor %}
+          <span>({{ rp.rating }})</span>
+        </div>
+        <div class="card-price">${{ "%.2f"|format(rp.price) }}</div>
+        {% if rp.explanation %}
+        <div class="explanation-tag">💡 {{ rp.explanation }}</div>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+</section>
+{% endblock %}

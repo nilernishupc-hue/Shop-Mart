@@ -1,0 +1,128 @@
+{% extends "layout.html" %}
+{% block title %}Model Dashboard{% endblock %}
+
+{% block content %}
+<section class="section" id="dashboard-page">
+
+  <div style="margin-bottom:var(--sp4);">
+    <h1 class="section-title">📊 Model Evaluation Dashboard</h1>
+    <p style="color:var(--text-muted);margin-top:var(--sp1);">
+      Performance metrics for the three recommendation models implemented in this research prototype.
+      Precision, Recall and F1 are computed at rank 5 (P@5, R@5, F1@5).
+    </p>
+  </div>
+
+  {% if metrics %}
+
+  <!-- ── KPI Cards ─────────────────────────────────────────── -->
+  <div class="metrics-row" id="kpi-row">
+    <div class="metric-card" id="kpi-rmse">
+      <div class="metric-label">SVD RMSE (Test split 25%)</div>
+      <div class="metric-value">{{ metrics.rmse }}</div>
+    </div>
+    <div class="metric-card" id="kpi-hybrid-precision">
+      <div class="metric-label">Hybrid Precision@5</div>
+      <div class="metric-value">{{ "%.0f"|format(metrics.hybrid.precision * 100) }}%</div>
+    </div>
+    <div class="metric-card" id="kpi-hybrid-f1">
+      <div class="metric-label">Hybrid F1-Score@5</div>
+      <div class="metric-value">{{ "%.0f"|format(metrics.hybrid.f1 * 100) }}%</div>
+    </div>
+  </div>
+
+  <!-- ── Charts ────────────────────────────────────────────── -->
+  <div class="charts-row" id="charts-row">
+
+    <div class="chart-card" id="f1-chart-card">
+      <h3>F1-Score@5 by Model</h3>
+      <canvas id="f1Chart" aria-label="F1 Score comparison chart"></canvas>
+    </div>
+
+    <div class="chart-card" id="pr-chart-card">
+      <h3>Precision@5 vs Recall@5</h3>
+      <canvas id="prChart" aria-label="Precision and Recall comparison chart"></canvas>
+    </div>
+
+  </div>
+
+  <!-- ── Table ─────────────────────────────────────────────── -->
+  <div class="chart-card" style="margin-top:var(--sp3);" id="metrics-table-card">
+    <h3>Full Metrics Summary</h3>
+    <table style="width:100%;border-collapse:collapse;margin-top:var(--sp3);" id="metrics-table">
+      <thead>
+        <tr style="background:var(--grey-50);text-align:left;">
+          <th style="padding:12px 16px;font-size:.9rem;color:var(--text-muted);font-weight:600;">Model</th>
+          <th style="padding:12px 16px;font-size:.9rem;color:var(--text-muted);font-weight:600;">Precision@5</th>
+          <th style="padding:12px 16px;font-size:.9rem;color:var(--text-muted);font-weight:600;">Recall@5</th>
+          <th style="padding:12px 16px;font-size:.9rem;color:var(--text-muted);font-weight:600;">F1@5</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for key, label in [('cf','Collaborative Filtering (SVD)'),('cb','Content-Based (TF-IDF)'),('hybrid','Hybrid (0.6×CF + 0.4×CB)')] %}
+        <tr style="border-top:1px solid var(--grey-100);" id="row-{{ key }}">
+          <td style="padding:14px 16px;font-weight:600;">{{ label }}</td>
+          <td style="padding:14px 16px;">{{ "%.2f"|format(metrics[key].precision) }}</td>
+          <td style="padding:14px 16px;">{{ "%.2f"|format(metrics[key].recall) }}</td>
+          <td style="padding:14px 16px;"><strong>{{ "%.2f"|format(metrics[key].f1) }}</strong></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    const m = {{ metrics | tojson }};
+    const labels  = ['Collaborative Filtering', 'Content-Based', 'Hybrid Model'];
+    const colours = {
+      blue:    'rgba(74,144,217,0.85)',
+      navy:    'rgba(26,35,50,0.75)',
+      teal:    'rgba(16,185,129,0.75)',
+      blueB:   'rgba(74,144,217,1)',
+      navyB:   'rgba(26,35,50,1)',
+      tealB:   'rgba(16,185,129,1)',
+    };
+    const chartDefaults = {
+      plugins:{ legend:{ labels:{ font:{ family:'Inter' } } } },
+      scales:{ y:{ beginAtZero:true, max:1, ticks:{ font:{ family:'Inter' } } }, x:{ ticks:{ font:{ family:'Inter' } } } }
+    };
+
+    // F1 chart
+    new Chart(document.getElementById('f1Chart'), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets:[{
+          label:'F1-Score@5',
+          data:[ m.cf.f1, m.cb.f1, m.hybrid.f1 ],
+          backgroundColor:[ colours.blue, colours.teal, colours.navy ],
+          borderRadius: 8,
+          borderSkipped: false,
+        }]
+      },
+      options: chartDefaults
+    });
+
+    // Precision vs Recall
+    new Chart(document.getElementById('prChart'), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets:[
+          { label:'Precision@5', data:[ m.cf.precision, m.cb.precision, m.hybrid.precision ], backgroundColor: colours.blue, borderRadius:8, borderSkipped:false },
+          { label:'Recall@5',    data:[ m.cf.recall,    m.cb.recall,    m.hybrid.recall    ], backgroundColor: colours.navy, borderRadius:8, borderSkipped:false },
+        ]
+      },
+      options: chartDefaults
+    });
+  </script>
+
+  {% else %}
+  <div class="empty-state" id="dashboard-empty">
+    <div class="icon">⚙️</div>
+    <h3>Metrics unavailable</h3>
+    <p>Generate the database first by running <code>python generate_data.py</code>, then reload this page.</p>
+  </div>
+  {% endif %}
+
+</section>
+{% endblock %}

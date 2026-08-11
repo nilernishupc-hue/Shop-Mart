@@ -1,0 +1,344 @@
+{% extends "layout.html" %}
+{% block title %}Checkout - Shop Mart{% endblock %}
+
+{% block content %}
+<section class="section" id="checkout-page" style="max-width: 1100px; margin: 0 auto;">
+  
+  <!-- Security Header -->
+  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid var(--grey-200); padding-bottom: var(--sp2); margin-bottom: var(--sp4);">
+    <div style="display: flex; align-items: center; gap: var(--sp2);">
+      <h1 class="section-title" style="margin-bottom:0;">🔒 Secure Checkout</h1>
+      <span style="font-size:.8rem; background:rgba(46, 204, 113, 0.15); color:var(--green-500); padding: 4px 10px; border-radius: 12px; font-weight: 700;">256-Bit SSL Encrypted</span>
+    </div>
+    <div style="font-size: .85rem; color: var(--text-muted);">
+      Need help? <a href="#" style="color:var(--soft-blue); font-weight:600;">Contact Support</a>
+    </div>
+  </div>
+
+  <form method="POST" action="{{ url_for('checkout_process') }}" id="checkout-form">
+    <div style="display: grid; grid-template-columns: 1.8fr 1fr; gap: var(--sp4); align-items: start;">
+      
+      <!-- Left Column: Multi-Step Checkout Form -->
+      <div style="display: flex; flex-direction: column; gap: var(--sp4);">
+        
+        <!-- STEP 1: Shipping Address -->
+        <div style="background: var(--white); padding: var(--sp4); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--grey-100);">
+          <div style="display: flex; align-items: center; gap: var(--sp2); margin-bottom: var(--sp3);">
+            <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--midnight); color: var(--white); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: .9rem;">1</div>
+            <h2 style="font-size: 1.15rem; color: var(--midnight); font-weight: 700; margin-bottom: 0;">Shipping Address</h2>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp2); margin-bottom: var(--sp2);">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" for="first_name">First Name</label>
+              <input type="text" id="first_name" name="first_name" class="form-input form-input-full" value="{{ user.first_name or '' }}" placeholder="John" required />
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" for="last_name">Last Name</label>
+              <input type="text" id="last_name" name="last_name" class="form-input form-input-full" value="{{ user.last_name or '' }}" placeholder="Doe" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="email">Email Address (for order tracking)</label>
+            <input type="email" id="email" name="email" class="form-input form-input-full" value="{{ user.email or '' }}" placeholder="john.doe@example.com" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="address">Street Address</label>
+            <input type="text" id="address" name="address" class="form-input form-input-full" placeholder="123 Main Street, Apt 4B" required />
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--sp2);">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" for="city">City</label>
+              <input type="text" id="city" name="city" class="form-input form-input-full" placeholder="New York" required />
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" for="state">State / Province</label>
+              <input type="text" id="state" name="state" class="form-input form-input-full" placeholder="NY" required />
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" for="zip">Zip / Postal Code</label>
+              <input type="text" id="zip" name="zip" class="form-input form-input-full" placeholder="10001" required />
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: var(--sp2); margin-bottom:0;">
+            <label class="form-label" for="phone">Phone Number (for SMS delivery updates)</label>
+            <input type="tel" id="phone" name="phone" class="form-input form-input-full" placeholder="+1 (555) 019-2834" required />
+          </div>
+        </div>
+
+        <!-- STEP 2: Delivery Options -->
+        <div style="background: var(--white); padding: var(--sp4); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--grey-100);">
+          <div style="display: flex; align-items: center; gap: var(--sp2); margin-bottom: var(--sp3);">
+            <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--midnight); color: var(--white); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: .9rem;">2</div>
+            <h2 style="font-size: 1.15rem; color: var(--midnight); font-weight: 700; margin-bottom: 0;">Delivery Speed</h2>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: var(--sp2);">
+            <!-- Standard Shipping Option -->
+            <label style="display: flex; align-items: center; justify-content: space-between; padding: var(--sp3); border: 2px solid var(--soft-blue); border-radius: var(--radius-sm); background: rgba(52, 152, 219, 0.04); cursor: pointer;" id="std-shipping-label">
+              <div style="display: flex; align-items: center; gap: var(--sp2);">
+                <input type="radio" name="shipping_method" value="standard" checked onchange="toggleShipping('standard')" style="width: 18px; height: 18px; accent-color: var(--soft-blue);" />
+                <div>
+                  <strong style="color: var(--midnight); font-size: .95rem; display: block;">Standard Shipping (5-7 Business Days)</strong>
+                  <span style="font-size: .8rem; color: var(--text-muted);">Tracking included with SMS alerts</span>
+                </div>
+              </div>
+              <span style="font-weight: 700; color: var(--midnight);">
+                {% if std_shipping == 0 %}FREE{% else %}${{ "%.2f"|format(std_shipping) }}{% endif %}
+              </span>
+            </label>
+
+            <!-- Express Shipping Option -->
+            <label style="display: flex; align-items: center; justify-content: space-between; padding: var(--sp3); border: 1.5px solid var(--grey-200); border-radius: var(--radius-sm); background: var(--white); cursor: pointer;" id="express-shipping-label">
+              <div style="display: flex; align-items: center; gap: var(--sp2);">
+                <input type="radio" name="shipping_method" value="express" onchange="toggleShipping('express')" style="width: 18px; height: 18px; accent-color: var(--soft-blue);" />
+                <div>
+                  <strong style="color: var(--midnight); font-size: .95rem; display: block;">⚡ Express Shipping (2-3 Business Days)</strong>
+                  <span style="font-size: .8rem; color: var(--green-500); font-weight: 600;">Guaranteed On-Time Delivery</span>
+                </div>
+              </div>
+              <span style="font-weight: 700; color: var(--midnight);">${{ "%.2f"|format(express_shipping) }}</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- STEP 3: Payment Methods (Temu / Shein style) -->
+        <div style="background: var(--white); padding: var(--sp4); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--grey-100);">
+          <div style="display: flex; align-items: center; gap: var(--sp2); margin-bottom: var(--sp3);">
+            <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--midnight); color: var(--white); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: .9rem;">3</div>
+            <h2 style="font-size: 1.15rem; color: var(--midnight); font-weight: 700; margin-bottom: 0;">Payment Method</h2>
+          </div>
+
+          <!-- Payment Options Tabs -->
+          <div style="display: flex; flex-direction: column; gap: var(--sp2); margin-bottom: var(--sp3);">
+            
+            <!-- Option A: Credit / Debit Card -->
+            <label style="display: flex; align-items: center; justify-content: space-between; padding: var(--sp3); border: 2px solid var(--soft-blue); border-radius: var(--radius-sm); background: rgba(52, 152, 219, 0.04); cursor: pointer;" id="pay-card-option">
+              <div style="display: flex; align-items: center; gap: var(--sp2);">
+                <input type="radio" name="payment_method" value="card" checked onchange="togglePayment('card')" style="width: 18px; height: 18px; accent-color: var(--soft-blue);" />
+                <strong style="color: var(--midnight); font-size: .95rem;">Credit / Debit Card</strong>
+              </div>
+              <span style="font-size: 1.2rem;">💳 Visa / Mastercard / Amex</span>
+            </label>
+
+            <!-- Card details box -->
+            <div id="card-fields-box" style="display: flex; flex-direction: column; gap: var(--sp2); padding: var(--sp3); background: var(--grey-100); border-radius: var(--radius-sm); border: 1px solid var(--grey-200);">
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label" for="card_name">Cardholder Name</label>
+                <input type="text" id="card_name" name="card_name" class="form-input form-input-full" placeholder="John Doe" value="{{ user.first_name }} {{ user.last_name }}" />
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label" for="card_number">Card Number</label>
+                <input type="text" id="card_number" name="card_number" class="form-input form-input-full" placeholder="4242 •••• •••• 4242" maxlength="19" />
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp2);">
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label" for="card_exp">Expiration Date</label>
+                  <input type="text" id="card_exp" name="card_exp" class="form-input form-input-full" placeholder="MM/YY" maxlength="5" />
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label" for="card_cvv">CVV Code</label>
+                  <input type="password" id="card_cvv" name="card_cvv" class="form-input form-input-full" placeholder="123" maxlength="4" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Option B: Klarna / Afterpay 4-Installments -->
+            <label style="display: flex; align-items: center; justify-content: space-between; padding: var(--sp3); border: 1.5px solid var(--grey-200); border-radius: var(--radius-sm); background: var(--white); cursor: pointer;" id="pay-klarna-option">
+              <div style="display: flex; align-items: center; gap: var(--sp2);">
+                <input type="radio" name="payment_method" value="klarna" onchange="togglePayment('klarna')" style="width: 18px; height: 18px; accent-color: var(--soft-blue);" />
+                <div>
+                  <strong style="color: var(--midnight); font-size: .95rem; display: block;">Klarna / Afterpay (Pay in 4)</strong>
+                  <span style="font-size: .8rem; color: var(--text-muted);">4 interest-free payments of <strong style="color:var(--midnight);" id="klarna-calc-display">${{ "%.2f"|format(klarna_installment) }}</strong></span>
+                </div>
+              </div>
+              <span style="font-size: 1.1rem; background: #ffb3c7; color: #000; padding: 2px 8px; border-radius: 4px; font-weight: bold;">Klarna.</span>
+            </label>
+
+            <!-- Option C: PayPal -->
+            <label style="display: flex; align-items: center; justify-content: space-between; padding: var(--sp3); border: 1.5px solid var(--grey-200); border-radius: var(--radius-sm); background: var(--white); cursor: pointer;" id="pay-paypal-option">
+              <div style="display: flex; align-items: center; gap: var(--sp2);">
+                <input type="radio" name="payment_method" value="paypal" onchange="togglePayment('paypal')" style="width: 18px; height: 18px; accent-color: var(--soft-blue);" />
+                <div>
+                  <strong style="color: var(--midnight); font-size: .95rem; display: block;">PayPal Express Checkout</strong>
+                  <span style="font-size: .8rem; color: var(--text-muted);">Fast, secure login with your PayPal account</span>
+                </div>
+              </div>
+              <span style="font-size: 1.2rem; color: #003087; font-weight: bold;">PayPal</span>
+            </label>
+
+            <!-- Option D: Apple Pay / Google Pay -->
+            <label style="display: flex; align-items: center; justify-content: space-between; padding: var(--sp3); border: 1.5px solid var(--grey-200); border-radius: var(--radius-sm); background: var(--white); cursor: pointer;" id="pay-applepay-option">
+              <div style="display: flex; align-items: center; gap: var(--sp2);">
+                <input type="radio" name="payment_method" value="applepay" onchange="togglePayment('applepay')" style="width: 18px; height: 18px; accent-color: var(--soft-blue);" />
+                <div>
+                  <strong style="color: var(--midnight); font-size: .95rem; display: block;">Apple Pay / Google Pay</strong>
+                  <span style="font-size: .8rem; color: var(--text-muted);">One-click biometric authorization</span>
+                </div>
+              </div>
+              <span style="font-size: 1.2rem; font-weight: bold;"> Pay</span>
+            </label>
+
+            <!-- Option E: Cash on Delivery (COD) -->
+            <label style="display: flex; align-items: center; justify-content: space-between; padding: var(--sp3); border: 1.5px solid var(--grey-200); border-radius: var(--radius-sm); background: var(--white); cursor: pointer;" id="pay-cod-option">
+              <div style="display: flex; align-items: center; gap: var(--sp2);">
+                <input type="radio" name="payment_method" value="cod" onchange="togglePayment('cod')" style="width: 18px; height: 18px; accent-color: var(--soft-blue);" />
+                <div>
+                  <strong style="color: var(--midnight); font-size: .95rem; display: block;">Cash on Delivery (COD)</strong>
+                  <span style="font-size: .8rem; color: var(--text-muted);">Pay in cash when parcel reaches your doorstep</span>
+                </div>
+              </div>
+              <span style="font-size: 1.2rem;">💵 COD</span>
+            </label>
+
+          </div>
+        </div>
+
+        <!-- Temu / Shein Buyer Guarantees -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--sp2); text-align: center; background: rgba(52, 152, 219, 0.05); padding: var(--sp3); border-radius: var(--radius); border: 1px solid rgba(52, 152, 219, 0.2);">
+          <div>
+            <div style="font-size: 1.4rem;">🛡️</div>
+            <strong style="font-size: .85rem; color: var(--midnight); display: block; margin-top: 4px;">90-Day Free Returns</strong>
+            <span style="font-size: .75rem; color: var(--text-muted);">Return any item hassle-free</span>
+          </div>
+          <div>
+            <div style="font-size: 1.4rem;">💰</div>
+            <strong style="font-size: .85rem; color: var(--midnight); display: block; margin-top: 4px;">Price Adjustment</strong>
+            <span style="font-size: .75rem; color: var(--text-muted);">Refund if price drops in 30 days</span>
+          </div>
+          <div>
+            <div style="font-size: 1.4rem;">📦</div>
+            <strong style="font-size: .85rem; color: var(--midnight); display: block; margin-top: 4px;">Delivery Guarantee</strong>
+            <span style="font-size: .75rem; color: var(--text-muted);">$5 credit if shipment is late</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Order Summary Box -->
+      <div style="display: flex; flex-direction: column; gap: var(--sp3); position: sticky; top: 20px;">
+        <div style="background: var(--white); padding: var(--sp4); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--grey-100);">
+          <h3 style="color: var(--midnight); margin-bottom: var(--sp2); font-weight: 700; border-bottom: 1.5px solid var(--grey-100); padding-bottom: 10px; font-size: 1.1rem;">
+            Order Items ({{ items|length }})
+          </h3>
+
+          <!-- Items Mini List -->
+          <div style="max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: var(--sp2); margin-bottom: var(--sp3); padding-right: 4px;">
+            {% for item in items %}
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: var(--sp2);">
+              <div style="display: flex; align-items: center; gap: var(--sp1.5);">
+                <img src="{{ item.image_url }}" alt="{{ item.name }}" style="width: 42px; height: 42px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--grey-200);" />
+                <div>
+                  <strong style="font-size: .85rem; color: var(--midnight); display: block; max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ item.name }}</strong>
+                  <span style="font-size: .75rem; color: var(--text-muted);">Qty: {{ item.quantity }}</span>
+                </div>
+              </div>
+              <span style="font-weight: 700; font-size: .9rem; color: var(--midnight);">${{ "%.2f"|format(item.price * item.quantity) }}</span>
+            </div>
+            {% endfor %}
+          </div>
+
+          <hr style="border: 0; border-top: 1.5px solid var(--grey-100); margin: var(--sp2) 0;" />
+
+          <!-- Summary Calculations -->
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: var(--sp3); font-size: .9rem;">
+            <div style="display: flex; justify-content: space-between; color: var(--text-muted);">
+              <span>Items Subtotal</span>
+              <span style="color: var(--midnight); font-weight: 600;">${{ "%.2f"|format(subtotal) }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; color: var(--text-muted);">
+              <span>Shipping Speed</span>
+              <span id="summary-shipping-text" style="color: var(--midnight); font-weight: 600;">
+                {% if std_shipping == 0 %}FREE{% else %}${{ "%.2f"|format(std_shipping) }}{% endif %}
+              </span>
+            </div>
+            <div style="display: flex; justify-content: space-between; color: var(--text-muted);">
+              <span>Estimated Tax (8%)</span>
+              <span style="color: var(--midnight); font-weight: 600;">${{ "%.2f"|format(tax) }}</span>
+            </div>
+            
+            <hr style="border: 0; border-top: 1.5px solid var(--grey-100); margin: 6px 0;" />
+            
+            <div style="display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 800; color: var(--midnight);">
+              <span>Total Pay</span>
+              <span id="summary-total-text">${{ "%.2f"|format(total) }}</span>
+            </div>
+          </div>
+
+          <!-- Submit Order Button -->
+          <button type="submit" class="btn btn-primary btn-full" style="height: 50px; font-size: 1.05rem; font-weight: 800; margin-bottom: var(--sp2);" id="place-order-btn">
+            ⚡ Place Order Now
+          </button>
+
+          <div style="text-align: center; font-size: .75rem; color: var(--text-muted);">
+            By placing order, you agree to Shop Mart's Terms of Use & Privacy Policy.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </form>
+</section>
+
+<script>
+  const baseSubtotal = {{ subtotal }};
+  const stdShippingCost = {{ std_shipping }};
+  const expressShippingCost = {{ express_shipping }};
+  const taxCost = {{ tax }};
+
+  function toggleShipping(method) {
+    const stdLabel = document.getElementById('std-shipping-label');
+    const expLabel = document.getElementById('express-shipping-label');
+    const shippingText = document.getElementById('summary-shipping-text');
+    const totalText = document.getElementById('summary-total-text');
+    const klarnaDisplay = document.getElementById('klarna-calc-display');
+
+    let currentShipping = stdShippingCost;
+    if (method === 'express') {
+      currentShipping = expressShippingCost;
+      expLabel.style.border = '2px solid var(--soft-blue)';
+      expLabel.style.background = 'rgba(52, 152, 219, 0.04)';
+      stdLabel.style.border = '1.5px solid var(--grey-200)';
+      stdLabel.style.background = 'var(--white)';
+      shippingText.innerText = `$${expressShippingCost.toFixed(2)}`;
+    } else {
+      stdLabel.style.border = '2px solid var(--soft-blue)';
+      stdLabel.style.background = 'rgba(52, 152, 219, 0.04)';
+      expLabel.style.border = '1.5px solid var(--grey-200)';
+      expLabel.style.background = 'var(--white)';
+      shippingText.innerText = stdShippingCost === 0 ? 'FREE' : `$${stdShippingCost.toFixed(2)}`;
+    }
+
+    const newTotal = baseSubtotal + currentShipping + taxCost;
+    totalText.innerText = `$${newTotal.toFixed(2)}`;
+    if (klarnaDisplay) {
+      klarnaDisplay.innerText = `$${(newTotal / 4.0).toFixed(2)}`;
+    }
+  }
+
+  function togglePayment(method) {
+    const options = ['card', 'klarna', 'paypal', 'applepay', 'cod'];
+    options.forEach(opt => {
+      const label = document.getElementById(`pay-${opt}-option`);
+      if (label) {
+        if (opt === method) {
+          label.style.border = '2px solid var(--soft-blue)';
+          label.style.background = 'rgba(52, 152, 219, 0.04)';
+        } else {
+          label.style.border = '1.5px solid var(--grey-200)';
+          label.style.background = 'var(--white)';
+        }
+      }
+    });
+
+    const cardBox = document.getElementById('card-fields-box');
+    if (cardBox) {
+      cardBox.style.display = (method === 'card') ? 'flex' : 'none';
+    }
+  }
+</script>
+{% endblock %}

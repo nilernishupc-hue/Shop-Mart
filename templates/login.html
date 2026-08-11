@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="auth-wrap" id="login-page">
+  <div class="auth-card">
+    <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Shop Mart Logo" style="display:block; margin:0 auto var(--sp2); width:68px; height:68px; border-radius:14px; object-fit:cover; box-shadow:0 4px 12px rgba(0,0,0,0.12);" />
+    <h2>Welcome Back</h2>
+    <p>Login to Shop Mart</p>
+
+    {% if error %}
+    <div class="error-msg" id="login-error">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('login') }}" id="login-form">
+      <div class="form-group">
+        <label class="form-label" for="username-input">Username or Email</label>
+        <input
+          type="text"
+          id="username-input"
+          name="username"
+          class="form-input form-input-full"
+          placeholder="e.g. Vihaan Sharma"
+          required
+          autocomplete="username"
+        />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="password-input">Password</label>
+        <input
+          type="password"
+          id="password-input"
+          name="password"
+          class="form-input form-input-full"
+          placeholder="Enter password"
+          required
+          autocomplete="current-password"
+        />
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;font-size:1rem;padding:13px;" id="login-submit-btn">
+        Login &rarr;
+      </button>
+    </form>
+
+    <div class="hint-box">
+      💡 <strong>Demo accounts:</strong> Use real dataset customer names (e.g. <strong>Vihaan Sharma</strong>, <strong>Pooja Kumar</strong>) or emails (e.g. <strong>vihaan.sharma@example.com</strong>) with password: <strong>password123</strong>.
+    </div>
+
+    <div style="margin-top: var(--sp3); font-size: .9rem;">
+      Don't have an account? <a href="{{ url_for('register') }}" style="color:var(--soft-blue);font-weight:600;">Register here</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

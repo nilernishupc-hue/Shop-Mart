@@ -1,0 +1,100 @@
+{% extends "layout.html" %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="auth-wrap" id="register-page">
+  <div class="auth-card">
+    <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Shop Mart Logo" style="display:block; margin:0 auto var(--sp2); width:68px; height:68px; border-radius:14px; object-fit:cover; box-shadow:0 4px 12px rgba(0,0,0,0.12);" />
+    <h2>Create Account</h2>
+    <p>Register to start generating personalised recommendations tailored to your behavior.</p>
+
+    {% if error %}
+    <div class="error-msg" id="register-error">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('register') }}" id="register-form">
+      <div class="form-group">
+        <label class="form-label" for="first-name-input">First Name</label>
+        <input
+          type="text"
+          id="first-name-input"
+          name="first_name"
+          class="form-input form-input-full"
+          placeholder="e.g. John"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="last-name-input">Last Name</label>
+        <input
+          type="text"
+          id="last-name-input"
+          name="last_name"
+          class="form-input form-input-full"
+          placeholder="e.g. Doe"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="email-input">Email Address</label>
+        <input
+          type="email"
+          id="email-input"
+          name="email"
+          class="form-input form-input-full"
+          placeholder="john.doe@example.com"
+          required
+          autocomplete="email"
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="username-input">Choose Username</label>
+        <input
+          type="text"
+          id="username-input"
+          name="username"
+          class="form-input form-input-full"
+          placeholder="johndoe123"
+          required
+          autocomplete="username"
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password-input">Choose Password</label>
+        <input
+          type="password"
+          id="password-input"
+          name="password"
+          class="form-input form-input-full"
+          placeholder="Min 6 characters"
+          required
+          autocomplete="new-password"
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="dob-input">Date of Birth</label>
+        <input
+          type="date"
+          id="dob-input"
+          name="dob"
+          class="form-input form-input-full"
+          required
+        />
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;font-size:1rem;padding:13px;" id="register-submit-btn">
+        Register &rarr;
+      </button>
+    </form>
+
+    <div style="margin-top: var(--sp3); font-size: .9rem;">
+      Already have an account? <a href="{{ url_for('login') }}" style="color:var(--soft-blue);font-weight:600;">Login here</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

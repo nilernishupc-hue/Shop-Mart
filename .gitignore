@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+*.log
+.DS_Store
+Thumbs.db
+git_tool/
+mingit.zip
+Shop_Mart_Website.zip
+

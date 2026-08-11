@@ -1,0 +1,115 @@
+{% extends "layout.html" %}
+{% block title %}Order Confirmed - Shop Mart{% endblock %}
+
+{% block content %}
+<section class="section" id="checkout-success-page" style="max-width: 700px; margin: var(--sp4) auto;">
+  
+  <div style="background: var(--white); padding: var(--sp5) var(--sp4); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--grey-100); text-align: center;">
+    <!-- Success Icon -->
+    <div style="width: 80px; height: 80px; background: rgba(46, 204, 113, 0.15); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: var(--sp3);">
+      <span style="font-size: 3rem; color: #2ecc71;">✓</span>
+    </div>
+    
+    <h1 style="color: var(--midnight); font-weight: 800; font-size: 1.8rem; margin-bottom: 6px;">Order Confirmed!</h1>
+    <p style="color: var(--text-muted); font-size: 1rem; margin-bottom: var(--sp4);">Thank you for shopping with Shop Mart. We've received your payment and are packing your items!</p>
+    
+    <!-- Order info summary grid -->
+    <div style="background: var(--grey-100); padding: var(--sp3); border-radius: var(--radius-sm); border: 1px solid var(--grey-200); margin-bottom: var(--sp4); display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp3); text-align: left;">
+      <div>
+        <span style="font-size: .8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 2px;">Order Number</span>
+        <strong style="color: var(--midnight); font-size: 1.1rem;" id="success-order-num">{{ receipt.order_num }}</strong>
+      </div>
+      <div>
+        <span style="font-size: .8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 2px;">Estimated Delivery</span>
+        <strong style="color: var(--green-500); font-size: 1.1rem;" id="success-delivery-date">{{ receipt.delivery_date }}</strong>
+      </div>
+      <div>
+        <span style="font-size: .8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 2px;">Customer</span>
+        <strong style="color: var(--midnight); font-size: .95rem;">{{ receipt.customer_name }}</strong>
+      </div>
+      <div>
+        <span style="font-size: .8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 2px;">Payment Method</span>
+        <strong style="color: var(--midnight); font-size: .95rem;">
+          {% if receipt.payment_method == 'card' %}
+            💳 Card ending in {{ receipt.card_last4 }}
+          {% elif receipt.payment_method == 'klarna' %}
+            💖 Klarna (4 Installments)
+          {% elif receipt.payment_method == 'paypal' %}
+            🌐 PayPal Express
+          {% elif receipt.payment_method == 'applepay' %}
+             Apple Pay / Google Pay
+          {% elif receipt.payment_method == 'cod' %}
+            💵 Cash on Delivery
+          {% else %}
+            💳 Electronic Payment
+          {% endif %}
+        </strong>
+      </div>
+    </div>
+
+    <!-- Temu/Shein style shipping tracking steps -->
+    <div style="margin-bottom: var(--sp4); text-align: left; background: var(--white); padding: var(--sp3); border: 1px solid var(--grey-200); border-radius: var(--radius-sm);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: var(--sp2);">
+        <h3 style="color: var(--midnight); font-weight: 700; font-size: .95rem; margin-bottom: 0;">Shipment Tracking Timeline</h3>
+        <span style="font-size:.75rem; background:var(--soft-blue); color:var(--white); padding:2px 8px; border-radius:10px; font-weight:bold; text-transform:uppercase;">{{ receipt.shipping_method }} delivery</span>
+      </div>
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; position: relative; margin-top: 15px; margin-bottom: 10px;">
+        <!-- Background line -->
+        <div style="position: absolute; top: 12px; left: 0; right: 0; height: 4px; background: var(--grey-300); z-index: 1;"></div>
+        <div style="position: absolute; top: 12px; left: 0; width: 33%; height: 4px; background: var(--soft-blue); z-index: 2;"></div>
+        
+        <!-- Steps -->
+        <div style="display: flex; flex-direction: column; align-items: center; z-index: 3; position: relative;">
+          <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--soft-blue); border: 4px solid var(--white); display: flex; align-items: center; justify-content: center; font-size: .75rem; color: var(--white); font-weight: bold;">1</div>
+          <span style="font-size: .75rem; font-weight: 700; color: var(--midnight); margin-top: 6px;">Order Placed</span>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center; z-index: 3; position: relative;">
+          <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--soft-blue); border: 4px solid var(--white); display: flex; align-items: center; justify-content: center; font-size: .75rem; color: var(--white); font-weight: bold;">2</div>
+          <span style="font-size: .75rem; font-weight: 700; color: var(--midnight); margin-top: 6px;">Processing</span>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center; z-index: 3; position: relative;">
+          <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--grey-300); border: 4px solid var(--white); display: flex; align-items: center; justify-content: center; font-size: .75rem; color: var(--text-muted); font-weight: bold;">3</div>
+          <span style="font-size: .75rem; font-weight: 600; color: var(--text-muted); margin-top: 6px;">In Transit</span>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center; z-index: 3; position: relative;">
+          <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--grey-300); border: 4px solid var(--white); display: flex; align-items: center; justify-content: center; font-size: .75rem; color: var(--text-muted); font-weight: bold;">4</div>
+          <span style="font-size: .75rem; font-weight: 600; color: var(--text-muted); margin-top: 6px;">Delivered</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Receipt Breakdown -->
+    <div style="text-align: left; background: var(--grey-100); padding: var(--sp3); border-radius: var(--radius-sm); margin-bottom: var(--sp4); border: 1px solid var(--grey-200);">
+      <h4 style="font-size: .9rem; color: var(--midnight); font-weight: 700; margin-bottom: var(--sp1.5);">Receipt Details</h4>
+      
+      <div style="display: flex; justify-content: space-between; font-size: .85rem; color: var(--text-muted); margin-bottom: 4px;">
+        <span>Items Total ({{ receipt.item_count }} items)</span>
+        <span style="color: var(--midnight); font-weight: 600;">${{ "%.2f"|format(receipt.subtotal) }}</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; font-size: .85rem; color: var(--text-muted); margin-bottom: 4px;">
+        <span>Shipping ({{ receipt.shipping_method|capitalize }})</span>
+        <span style="color: var(--midnight); font-weight: 600;">
+          {% if receipt.shipping_cost == 0 %}FREE{% else %}${{ "%.2f"|format(receipt.shipping_cost) }}{% endif %}
+        </span>
+      </div>
+      <div style="display: flex; justify-content: space-between; font-size: .85rem; color: var(--text-muted); margin-bottom: 6px;">
+        <span>Sales Tax (8%)</span>
+        <span style="color: var(--midnight); font-weight: 600;">${{ "%.2f"|format(receipt.tax) }}</span>
+      </div>
+      <hr style="border: 0; border-top: 1px solid var(--grey-300); margin: 6px 0;" />
+      <div style="display: flex; justify-content: space-between; font-size: 1.05rem; font-weight: 800; color: var(--midnight);">
+        <span>Total Paid</span>
+        <span>${{ "%.2f"|format(receipt.total) }}</span>
+      </div>
+    </div>
+
+    <!-- Continue buttons -->
+    <div style="display: flex; gap: var(--sp2); justify-content: center;">
+      <a href="{{ url_for('products') }}" class="btn btn-primary" style="padding: 12px 28px; font-weight: 600; margin-bottom: 0;">Continue Shopping</a>
+      <a href="{{ url_for('profile') }}" class="btn btn-outline" style="padding: 12px 28px; font-weight: 600; margin-bottom: 0;">View Order History</a>
+    </div>
+  </div>
+  
+</section>
+{% endblock %}

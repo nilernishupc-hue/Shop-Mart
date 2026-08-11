@@ -1,0 +1,104 @@
+{% extends "layout.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<!-- ── Hero ─────────────────────────────────────────────────── -->
+<section class="hero" id="hero">
+  <div class="hero-glow hero-glow-1"></div>
+  <div class="hero-glow hero-glow-2"></div>
+
+  <div class="hero-badge">🎓 MSc Research Prototype · Ulster University</div>
+
+  <h1>
+    Shop Smarter with<br/>
+    <span class="highlight">AI-Powered Recommendations</span>
+  </h1>
+
+  <p>
+    Experience personalised shopping powered by Collaborative Filtering (SVD),
+    Content-Based Filtering (TF-IDF) and a Hybrid model — all with transparent explanations.
+  </p>
+
+  <div class="hero-cta">
+    <a href="{{ url_for('products') }}" class="btn btn-primary" id="hero-browse-btn" style="font-size:1rem;padding:14px 32px;">
+      🛍️ Browse Products
+    </a>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-outline" id="hero-dashboard-btn" style="font-size:1rem;padding:14px 32px;">
+      📊 View Model Performance
+    </a>
+  </div>
+</section>
+
+<!-- ── Personalised Recommendations ─────────────────────────── -->
+{% if current_user and recommendations %}
+<section class="section" id="recommendations-section">
+  <div class="section-header">
+    <h2 class="section-title">
+      ✨ Recommended for <span>{{ current_user.username }}</span>
+    </h2>
+    <a href="{{ url_for('products') }}" class="section-link" id="recs-view-more">View all →</a>
+  </div>
+
+  <div class="product-grid" id="recommendations-grid">
+    {% for p in recommendations %}
+    <div class="card" id="rec-card-{{ p.id }}">
+      <div class="card-img-wrap">
+        <img src="{{ p.image_url }}" alt="{{ p.name }}" loading="lazy" />
+        <span class="card-badge">AI Pick</span>
+      </div>
+      <div class="card-body">
+        <div class="card-category">{{ p.category }}</div>
+        <a href="{{ url_for('product_detail', id=p.id) }}" class="card-name" id="rec-product-{{ p.id }}">{{ p.name }}</a>
+        <div class="card-stars">
+          {% for _ in range(p.rating|int) %}★{% endfor %}{% for _ in range(5 - p.rating|int) %}☆{% endfor %}
+          <span>({{ p.rating }})</span>
+        </div>
+        <div class="card-price">${{ "%.2f"|format(p.price) }}</div>
+        {% if p.explanation %}
+        <div class="explanation-tag">💡 {{ p.explanation }}</div>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% elif not current_user %}
+<section class="section">
+  <div class="empty-state" id="login-cta">
+    <div class="icon">🔐</div>
+    <h3>Get Personalised Recommendations</h3>
+    <p>Login to see AI-powered recommendations tailored just for you.</p>
+    <a href="{{ url_for('login') }}" class="btn btn-primary" id="empty-login-btn">Login Now</a>
+  </div>
+</section>
+{% endif %}
+
+<!-- ── Trending Products ─────────────────────────────────────── -->
+<section class="section" id="trending-section">
+  <div class="section-header">
+    <h2 class="section-title">🔥 Trending Products</h2>
+    <a href="{{ url_for('products') }}" class="section-link" id="trending-view-all">View all →</a>
+  </div>
+
+  <div class="product-grid" id="trending-grid">
+    {% for p in products %}
+    <div class="card" id="trending-card-{{ p.id }}">
+      <div class="card-img-wrap">
+        <img src="{{ p.image_url }}" alt="{{ p.name }}" loading="lazy" />
+      </div>
+      <div class="card-body">
+        <div class="card-category">{{ p.category }}</div>
+        <a href="{{ url_for('product_detail', id=p.id) }}" class="card-name" id="trending-product-{{ p.id }}">{{ p.name }}</a>
+        <div class="card-stars">
+          {% for _ in range(p.rating|int) %}★{% endfor %}{% for _ in range(5 - p.rating|int) %}☆{% endfor %}
+          <span>({{ p.rating }})</span>
+        </div>
+        <div class="card-price">${{ "%.2f"|format(p.price) }}</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% endblock %}

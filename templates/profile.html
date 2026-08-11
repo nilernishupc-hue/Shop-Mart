@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+{% block title %}{{ user.username }}'s Profile{% endblock %}
+
+{% block content %}
+<section class="section" id="profile-page">
+
+  <!-- Profile Header -->
+  <div class="profile-header" id="profile-header" style="align-items: flex-start; gap: var(--sp3);">
+    <div class="avatar" id="user-avatar">{{ user.username[0]|upper }}</div>
+    <div style="flex: 1;">
+      <h1 style="font-size: 1.75rem; font-weight: 800; color: var(--midnight); line-height: 1.2;">
+        {% if user.first_name %}{{ user.first_name }} {{ user.last_name }}{% else %}{{ user.username }}{% endif %}
+      </h1>
+      <p style="color: var(--soft-blue); font-weight: 600; font-size: 0.95rem; margin-bottom: var(--sp2);">@{{ user.username }}</p>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--sp2); background: var(--grey-50); padding: var(--sp2); border-radius: var(--radius-sm); margin-top: var(--sp1);">
+        <div>
+          <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Email Address</span>
+          <p style="font-size: 0.95rem; font-weight: 500; color: var(--midnight); word-break: break-all;">{{ user.email or 'N/A' }}</p>
+        </div>
+        <div>
+          <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Date of Birth</span>
+          <p style="font-size: 0.95rem; font-weight: 500; color: var(--midnight);">{{ user.dob or 'N/A' }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- History -->
+  <div class="section-header">
+    <h2 class="section-title">📋 Interaction History</h2>
+  </div>
+
+  {% if history %}
+  <div class="history-table" id="history-table">
+    {% for item in history %}
+    <div class="history-row" id="history-row-{{ loop.index }}">
+      <img src="{{ item.image_url }}" alt="{{ item.name }}" class="history-thumb" />
+
+      <div class="history-info">
+        <div class="history-name">
+          <a href="{{ url_for('product_detail', id=item.id) }}" style="color:inherit;" id="history-link-{{ loop.index }}">{{ item.name }}</a>
+        </div>
+        <div class="history-cat">{{ item.category }}</div>
+      </div>
+
+      <div>
+        {% if item.interaction_type == 'view' %}
+          <span class="tag tag-view">👁 Viewed</span>
+        {% elif item.interaction_type == 'purchase' %}
+          <span class="tag tag-purchase">🛒 Purchased</span>
+        {% elif item.interaction_type == 'rate' %}
+          <span class="tag tag-rate">⭐ Rated {{ item.rating }}/5</span>
+        {% endif %}
+      </div>
+
+      <div class="history-right" style="font-size:.8rem;color:var(--text-muted);">
+        ${{ "%.2f"|format(item.price) }}<br/>
+        <span>{{ item.timestamp[:16] if item.timestamp else '' }}</span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="empty-state" id="empty-history">
+    <div class="icon">🛍️</div>
+    <h3>No activity yet</h3>
+    <p>Start browsing products to build your interaction history and receive personalised recommendations.</p>
+    <a href="{{ url_for('products') }}" class="btn btn-primary" id="browse-from-profile-btn">Browse Products</a>
+  </div>
+  {% endif %}
+
+</section>
+{% endblock %}
