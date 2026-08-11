@@ -59,50 +59,223 @@
   </footer>
 
   <!-- Floating Toast Notifications -->
-  <div id="toast-container" style="position: fixed; bottom: 24px; right: 24px; z-index: 10000; display: flex; flex-direction: column; gap: var(--sp2);"></div>
+  <div id="toast-container" style="position:fixed;bottom:24px;right:24px;z-index:10000;display:flex;flex-direction:column;gap:var(--sp2);"></div>
+
+  <!-- ── Live Support Chat Widget ──────────────────────────── -->
+  <style>
+    #support-btn {
+      position: fixed; bottom: 24px; left: 24px; z-index: 9998;
+      width: 58px; height: 58px; border-radius: 50%;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border: none; cursor: pointer; box-shadow: 0 4px 20px rgba(99,102,241,0.5);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; transition: transform 0.2s, box-shadow 0.2s;
+    }
+    #support-btn:hover { transform: scale(1.1); box-shadow: 0 6px 28px rgba(99,102,241,0.7); }
+    #support-badge {
+      position: absolute; top: -4px; right: -4px; background: #ef4444;
+      color: #fff; border-radius: 50%; width: 18px; height: 18px;
+      font-size: 0.65rem; font-weight: 700; display: flex;
+      align-items: center; justify-content: center; border: 2px solid #0f172a;
+    }
+    #support-panel {
+      position: fixed; bottom: 96px; left: 24px; z-index: 9999;
+      width: 340px; background: #1e293b; border-radius: 16px;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+      border: 1px solid rgba(99,102,241,0.3);
+      display: none; flex-direction: column; overflow: hidden;
+      animation: slideUpChat 0.25s ease;
+    }
+    @keyframes slideUpChat {
+      from { opacity:0; transform: translateY(20px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+    #support-panel.open { display: flex; }
+    #chat-header {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      padding: 16px 18px; display: flex; align-items: center; gap: 12px;
+    }
+    #chat-header .avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+    }
+    #chat-header .info .name { font-weight: 700; color: #fff; font-size: 0.95rem; }
+    #chat-header .info .status { font-size: 0.75rem; color: rgba(255,255,255,0.75); display:flex; align-items:center; gap:5px; }
+    #chat-header .info .status::before { content:''; width:7px; height:7px; border-radius:50%; background:#4ade80; display:inline-block; }
+    #chat-close { margin-left:auto; background:none; border:none; color:rgba(255,255,255,0.8); cursor:pointer; font-size:1.2rem; }
+    #chat-messages {
+      padding: 16px; flex: 1; overflow-y: auto; max-height: 280px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .chat-msg { display: flex; gap: 8px; align-items: flex-end; }
+    .chat-msg.user { flex-direction: row-reverse; }
+    .chat-bubble {
+      max-width: 75%; padding: 10px 14px; border-radius: 14px;
+      font-size: 0.85rem; line-height: 1.4; color: #f1f5f9;
+      background: rgba(255,255,255,0.08);
+    }
+    .chat-msg.user .chat-bubble { background: #6366f1; color: #fff; border-radius: 14px 14px 4px 14px; }
+    .chat-msg.bot  .chat-bubble { background: rgba(255,255,255,0.08); border-radius: 14px 14px 14px 4px; }
+    .chat-typing { display:flex; gap:4px; align-items:center; padding: 10px 14px; background:rgba(255,255,255,0.08); border-radius:14px; width:fit-content; }
+    .chat-typing span { width:6px; height:6px; border-radius:50%; background:#94a3b8; animation: blink 1.2s infinite; }
+    .chat-typing span:nth-child(2) { animation-delay:0.2s; }
+    .chat-typing span:nth-child(3) { animation-delay:0.4s; }
+    @keyframes blink { 0%,80%,100%{opacity:0.3} 40%{opacity:1} }
+    #chat-quick { padding: 0 16px 10px; display:flex; flex-wrap:wrap; gap:6px; }
+    .chat-quick-btn {
+      background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.4);
+      color: #a5b4fc; border-radius: 20px; padding: 5px 12px; font-size: 0.75rem;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .chat-quick-btn:hover { background: rgba(99,102,241,0.35); }
+    #chat-input-row {
+      padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.07);
+      display: flex; gap: 8px; align-items: center;
+    }
+    #chat-input {
+      flex: 1; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px; padding: 8px 14px; color: #f1f5f9; font-size: 0.85rem; outline: none;
+    }
+    #chat-input::placeholder { color: #64748b; }
+    #chat-send {
+      width: 36px; height: 36px; border-radius: 50%; background: #6366f1;
+      border: none; cursor: pointer; display:flex; align-items:center; justify-content:center;
+      font-size: 1rem; transition: background 0.2s;
+    }
+    #chat-send:hover { background: #4f46e5; }
+  </style>
+
+  <!-- Support Button -->
+  <button id="support-btn" onclick="toggleChat()" aria-label="Open live support chat" title="Live Support">
+    💬
+    <span id="support-badge">1</span>
+  </button>
+
+  <!-- Chat Panel -->
+  <div id="support-panel" role="dialog" aria-label="Support chat">
+    <div id="chat-header">
+      <div class="avatar">🛍️</div>
+      <div class="info">
+        <div class="name">Shop Mart Support</div>
+        <div class="status">Online — typically replies instantly</div>
+      </div>
+      <button id="chat-close" onclick="toggleChat()" aria-label="Close chat">✕</button>
+    </div>
+    <div id="chat-messages">
+      <div class="chat-msg bot">
+        <div class="chat-bubble">👋 Hi there! Welcome to <strong>Shop Mart</strong>. How can I help you today?</div>
+      </div>
+    </div>
+    <div id="chat-quick">
+      <button class="chat-quick-btn" onclick="quickReply('How do I track my order?')">📦 Track order</button>
+      <button class="chat-quick-btn" onclick="quickReply('How do I return a product?')">↩️ Returns</button>
+      <button class="chat-quick-btn" onclick="quickReply('How do the AI recommendations work?')">🤖 AI Picks</button>
+      <button class="chat-quick-btn" onclick="quickReply('What payment methods do you accept?')">💳 Payments</button>
+    </div>
+    <div id="chat-input-row">
+      <input id="chat-input" type="text" placeholder="Type your message…" onkeydown="if(event.key==='Enter') sendMsg()" />
+      <button id="chat-send" onclick="sendMsg()" aria-label="Send message">➤</button>
+    </div>
+  </div>
 
   <script>
+    // ── Support Chat Logic ────────────────────────────────────
+    const faq = {
+      'track': '📦 You can track your order in your <strong>Profile → Orders</strong> section. Orders are usually dispatched within 1–2 business days.',
+      'return': '↩️ We offer a <strong>90-day free return</strong> policy. Simply go to your order history and click "Return Item".',
+      'recommend': '🤖 Our AI uses <strong>Collaborative Filtering (SVD)</strong>, <strong>Content-Based Filtering (TF-IDF)</strong> and a <strong>Hybrid model</strong> to personalise your recommendations based on your browsing and purchase history.',
+      'payment': '💳 We accept <strong>Visa, Mastercard, PayPal</strong> and all major credit/debit cards. All payments are secured with SSL encryption.',
+      'shipping': '🚚 Standard delivery takes <strong>3–5 business days</strong>. Express delivery (1–2 days) is available at checkout.',
+      'discount': '🏷️ Yes! Check the <strong>Trending Products</strong> section on the home page for current deals and special offers.',
+      'account': '👤 You can update your profile, change password and view order history from the <strong>Profile</strong> page after logging in.',
+      'contact': '📧 You can reach our team at <strong>support@shopmart.com</strong> or call <strong>+44 28 9036 5131</strong> (Mon–Fri, 9am–5pm).',
+      'default': "🤔 Thanks for your message! Our support team will get back to you shortly. In the meantime, feel free to browse our <a href='/products' style='color:#a5b4fc;'>products</a>!"
+    };
+
+    function toggleChat() {
+      const panel = document.getElementById('support-panel');
+      const badge = document.getElementById('support-badge');
+      panel.classList.toggle('open');
+      badge.style.display = 'none';
+      if (panel.classList.contains('open')) {
+        document.getElementById('chat-input').focus();
+        scrollChat();
+      }
+    }
+
+    function quickReply(text) {
+      document.getElementById('chat-input').value = text;
+      sendMsg();
+    }
+
+    function addMsg(text, sender) {
+      const msgs = document.getElementById('chat-messages');
+      const wrap = document.createElement('div');
+      wrap.className = `chat-msg ${sender}`;
+      const bubble = document.createElement('div');
+      bubble.className = 'chat-bubble';
+      bubble.innerHTML = text;
+      wrap.appendChild(bubble);
+      msgs.appendChild(wrap);
+      scrollChat();
+    }
+
+    function scrollChat() {
+      const msgs = document.getElementById('chat-messages');
+      setTimeout(() => msgs.scrollTop = msgs.scrollHeight, 50);
+    }
+
+    function getBotReply(msg) {
+      const t = msg.toLowerCase();
+      if (t.includes('track') || t.includes('order') || t.includes('delivery')) return faq.track;
+      if (t.includes('return') || t.includes('refund'))   return faq.return;
+      if (t.includes('recommend') || t.includes('ai') || t.includes('how')) return faq.recommend;
+      if (t.includes('pay') || t.includes('card') || t.includes('visa')) return faq.payment;
+      if (t.includes('ship') || t.includes('deliver'))    return faq.shipping;
+      if (t.includes('discount') || t.includes('deal') || t.includes('offer')) return faq.discount;
+      if (t.includes('account') || t.includes('profile') || t.includes('password')) return faq.account;
+      if (t.includes('contact') || t.includes('email') || t.includes('phone')) return faq.contact;
+      return faq.default;
+    }
+
+    function sendMsg() {
+      const input = document.getElementById('chat-input');
+      const text  = input.value.trim();
+      if (!text) return;
+      addMsg(text, 'user');
+      input.value = '';
+
+      // Show typing indicator
+      const msgs = document.getElementById('chat-messages');
+      const typing = document.createElement('div');
+      typing.className = 'chat-msg bot';
+      typing.id = 'typing-indicator';
+      typing.innerHTML = '<div class="chat-typing"><span></span><span></span><span></span></div>';
+      msgs.appendChild(typing);
+      scrollChat();
+
+      // Reply after short delay
+      setTimeout(() => {
+        const t = document.getElementById('typing-indicator');
+        if (t) t.remove();
+        addMsg(getBotReply(text), 'bot');
+      }, 900 + Math.random() * 400);
+    }
+
     function showToast(message, type = 'success') {
       const container = document.getElementById('toast-container');
       if (!container) return;
-      
       const toast = document.createElement('div');
-      toast.style.background = type === 'success' ? 'var(--green-500, #2ecc71)' : 'var(--sunset, #e74c3c)';
-      toast.style.color = '#fff';
-      toast.style.padding = '12px 24px';
-      toast.style.borderRadius = 'var(--radius, 8px)';
-      toast.style.boxShadow = 'var(--shadow, 0 4px 12px rgba(0,0,0,0.15))';
-      toast.style.fontSize = '0.9rem';
-      toast.style.fontWeight = '600';
-      toast.style.minWidth = '220px';
-      toast.style.transition = 'all 0.3s ease';
-      toast.style.opacity = '0';
-      toast.style.transform = 'translateY(20px)';
-      toast.style.display = 'flex';
-      toast.style.alignItems = 'center';
-      toast.style.gap = '8px';
-      
-      const icon = type === 'success' ? '✅' : '❌';
-      toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
-      
+      toast.style.cssText = `background:${type==='success'?'#2ecc71':'#e74c3c'};color:#fff;padding:12px 24px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);font-size:0.9rem;font-weight:600;min-width:220px;transition:all 0.3s ease;opacity:0;transform:translateY(20px);display:flex;align-items:center;gap:8px;`;
+      toast.innerHTML = `<span>${type==='success'?'✅':'❌'}</span><span>${message}</span>`;
       container.appendChild(toast);
-      
-      // Force repaint
       toast.offsetHeight;
-      
-      // Animate in
       toast.style.opacity = '1';
       toast.style.transform = 'translateY(0)';
-      
-      // Animate out and remove
-      setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateY(-20px)';
-        setTimeout(() => {
-          toast.remove();
-        }, 300);
-      }, 3000);
+      setTimeout(() => { toast.style.opacity='0'; toast.style.transform='translateY(-20px)'; setTimeout(()=>toast.remove(),300); }, 3000);
     }
   </script>
 </body>
 </html>
+
