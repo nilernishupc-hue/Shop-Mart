@@ -34,20 +34,97 @@
     </div>
   </div>
 
-  <!-- ── Charts ────────────────────────────────────────────── -->
-  <div class="charts-row" id="charts-row">
+  <!-- ── 5 Metric Charts ──────────────────────────────────── -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:var(--sp3);margin-top:var(--sp3);" id="charts-row">
 
-    <div class="chart-card" id="f1-chart-card">
-      <h3>F1-Score@5 by Model</h3>
-      <canvas id="f1Chart" aria-label="F1 Score comparison chart"></canvas>
+    <div class="chart-card" id="precision-chart-card">
+      <h3>Precision@5 by Model</h3>
+      <canvas id="precisionChart" aria-label="Precision@5 comparison"></canvas>
     </div>
 
-    <div class="chart-card" id="pr-chart-card">
-      <h3>Precision@5 vs Recall@5</h3>
-      <canvas id="prChart" aria-label="Precision and Recall comparison chart"></canvas>
+    <div class="chart-card" id="recall-chart-card">
+      <h3>Recall@5 by Model</h3>
+      <canvas id="recallChart" aria-label="Recall@5 comparison"></canvas>
+    </div>
+
+    <div class="chart-card" id="f1-chart-card">
+      <h3>F1-Score by Model</h3>
+      <canvas id="f1Chart" aria-label="F1-Score comparison"></canvas>
+    </div>
+
+    <div class="chart-card" id="map-chart-card">
+      <h3>MAP by Model</h3>
+      <canvas id="mapChart" aria-label="MAP comparison"></canvas>
+    </div>
+
+    <div class="chart-card" id="ndcg-chart-card" style="grid-column:1/-1;">
+      <h3>NDCG by Model</h3>
+      <canvas id="ndcgChart" aria-label="NDCG comparison" style="max-height:260px;"></canvas>
     </div>
 
   </div>
+
+  <script>
+    const m = {{ metrics | tojson }};
+    const labels = ['Random Baseline', 'Popularity-Based', 'Collaborative Filtering', 'Content-Based Filtering', 'Hybrid Model'];
+    const bgColors = [
+      'rgba(156,163,175,0.85)',
+      'rgba(251,146,60,0.85)',
+      'rgba(74,144,217,0.85)',
+      'rgba(16,185,129,0.85)',
+      'rgba(99,102,241,0.90)',
+    ];
+    const borderColors = [
+      'rgba(156,163,175,1)',
+      'rgba(251,146,60,1)',
+      'rgba(74,144,217,1)',
+      'rgba(16,185,129,1)',
+      'rgba(99,102,241,1)',
+    ];
+
+    function makeChart(canvasId, label, data) {
+      new Chart(document.getElementById(canvasId), {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label,
+            data,
+            backgroundColor: bgColors,
+            borderColor: borderColors,
+            borderWidth: 1.5,
+            borderRadius: 8,
+            borderSkipped: false,
+          }]
+        },
+        options: {
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y.toFixed(2)}` } }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 0.35,
+              ticks: { font: { family: 'Inter' }, callback: v => v.toFixed(2) },
+              grid: { color: 'rgba(255,255,255,0.06)' }
+            },
+            x: {
+              ticks: { font: { family: 'Inter', size: 11 }, maxRotation: 20 },
+              grid: { display: false }
+            }
+          }
+        }
+      });
+    }
+
+    makeChart('precisionChart', 'Precision@5', [m.random.precision, m.popular.precision, m.cf.precision, m.cb.precision, m.hybrid.precision]);
+    makeChart('recallChart',    'Recall@5',    [m.random.recall,    m.popular.recall,    m.cf.recall,    m.cb.recall,    m.hybrid.recall]);
+    makeChart('f1Chart',        'F1-Score',    [m.random.f1,        m.popular.f1,        m.cf.f1,        m.cb.f1,        m.hybrid.f1]);
+    makeChart('mapChart',       'MAP',         [m.random.map,       m.popular.map,       m.cf.map,       m.cb.map,       m.hybrid.map]);
+    makeChart('ndcgChart',      'NDCG',        [m.random.ndcg,      m.popular.ndcg,      m.cf.ndcg,      m.cb.ndcg,      m.hybrid.ndcg]);
+  </script>
+
 
   <!-- ── Table ─────────────────────────────────────────────── -->
   <div class="chart-card" style="margin-top:var(--sp3);" id="metrics-table-card">
