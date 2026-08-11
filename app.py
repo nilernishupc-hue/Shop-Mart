@@ -19,9 +19,11 @@ from recommendation_engine import (
     get_cb_recommendations,
     evaluate_models,
 )
+from whitenoise import WhiteNoise
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="static")
 app.secret_key = "ai_recommend_msc_2024_secret"
+app.wsgi_app = WhiteNoise(app.wsgi_app, root="static/", prefix="static/")
 
 # ──────────────────────────────────────────────────────────────────────────
 # Database helpers
