@@ -569,6 +569,73 @@
       }, 900 + Math.random() * 400);
     }
 
+    function quickAddToCart(event, productId) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const btn = event.currentTarget;
+      const originalHTML = btn.innerHTML;
+      btn.disabled = true;
+      btn.style.opacity = '0.7';
+      btn.innerHTML = `<span style="font-size:0.75rem;">Adding...</span>`;
+
+      fetch('/cart/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ product_id: productId, quantity: 1 })
+      })
+      .then(res => {
+        if (res.status === 401) {
+          window.location.href = '/login';
+          return null;
+        }
+        return res.json();
+      })
+      .then(data => {
+        if (!data) return;
+        if (data.success) {
+          btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+          btn.style.boxShadow = '0 2px 8px rgba(16,185,129,0.4)';
+          btn.innerHTML = `✓ Added`;
+
+          // Update nav cart badges
+          const navCartBtns = document.querySelectorAll('#nav-cart-btn, #nav-cart, #nav-cart-user, #nav-cart-guest, #nav-login');
+          navCartBtns.forEach(navBtn => {
+            let badge = navBtn.querySelector('.cart-badge-count') || navBtn.querySelector('#cart-count-badge');
+            if (!badge) {
+              badge = document.createElement('span');
+              badge.className = 'cart-badge-count';
+              badge.id = 'cart-count-badge';
+              badge.style.cssText = 'background:#ef4444; color:#fff; border-radius:50%; width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; font-size:.65rem; font-weight:700; margin-left:4px;';
+              navBtn.appendChild(badge);
+            }
+            badge.innerText = data.cart_count;
+          });
+
+          showToast('Product added to cart!');
+
+          setTimeout(() => {
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            btn.style.background = '';
+            btn.style.boxShadow = '';
+            btn.innerHTML = originalHTML;
+          }, 1800);
+        } else {
+          showToast(data.error || 'Failed to add item', 'error');
+          btn.disabled = false;
+          btn.style.opacity = '1';
+          btn.innerHTML = originalHTML;
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.innerHTML = originalHTML;
+      });
+    }
+
     function showToast(message, type = 'success') {
       const container = document.getElementById('toast-container');
       if (!container) return;

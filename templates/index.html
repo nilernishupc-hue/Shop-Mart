@@ -50,7 +50,13 @@
           {% for _ in range(p.rating|int) %}★{% endfor %}{% for _ in range(5 - p.rating|int) %}☆{% endfor %}
           <span>({{ p.rating }})</span>
         </div>
-        <div class="card-price">${{ "%.2f"|format(p.price) }}</div>
+        <div class="card-footer-row">
+          <div class="card-price">${{ "%.2f"|format(p.price) }}</div>
+          <button onclick="quickAddToCart(event, {{ p.id }})" class="btn-quick-cart" id="rec-cart-btn-{{ p.id }}" title="Add to Cart">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            + Add
+          </button>
+        </div>
         {% if p.explanation %}
         <div class="explanation-tag">💡 {{ p.explanation }}</div>
         {% endif %}
@@ -90,7 +96,13 @@
           {% for _ in range(p.rating|int) %}★{% endfor %}{% for _ in range(5 - p.rating|int) %}☆{% endfor %}
           <span>({{ p.rating }})</span>
         </div>
-        <div class="card-price">${{ "%.2f"|format(p.price) }}</div>
+        <div class="card-footer-row">
+          <div class="card-price">${{ "%.2f"|format(p.price) }}</div>
+          <button onclick="quickAddToCart(event, {{ p.id }})" class="btn-quick-cart" id="trending-cart-btn-{{ p.id }}" title="Add to Cart">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            + Add
+          </button>
+        </div>
       </div>
     </div>
     {% endfor %}
