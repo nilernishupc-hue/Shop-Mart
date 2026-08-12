@@ -187,7 +187,7 @@ PRODUCT_METADATA = {
     },
     "P00034": {
         "category": "Home & Kitchen",
-        "unsplash_id": "photo-1587080266227-677cd237c267",
+        "unsplash_id": "photo-1593642632559-0c6d3fc62b89",
         "desc": "Compact desk organizer with multiple compartments for pens, paperclips, and office essentials."
     },
     "P00035": {
