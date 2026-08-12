@@ -1118,23 +1118,28 @@ def populate_from_excel():
             # 50% chance to include a review photo
             image_url = None
             if random.random() < 0.5:
-                # Use the product's own image with slight crop variation so
-                # the review photo always matches the product
-                crop_variants = [
-                    "?auto=format&fit=crop&w=400&h=300&q=80",
-                    "?auto=format&fit=crop&w=400&h=300&q=75&crop=center",
-                    "?auto=format&fit=crop&w=400&h=300&q=80&crop=top",
-                    "?auto=format&fit=crop&w=400&h=300&q=80&crop=bottom",
-                    "?auto=format&fit=crop&w=360&h=280&q=80",
-                ]
-                # Get the product's image_url base
-                prod_row = conn.execute("SELECT image_url FROM products WHERE id=?", (p_id,)).fetchone()
-                if prod_row and prod_row[0]:
-                    base = prod_row[0].split('?')[0]
-                    image_url = base + random.choice(crop_variants)
-                
+                # Category-based unique photo pools — each review gets a different photo
+                REVIEW_PHOTO_POOLS = {
+                    "Electronics": ["photo-1505740420928-5e560c06d30e","photo-1526170375885-4d8ecf77b99f","photo-1546868871-7041f2a55e12","photo-1601524909162-ae8725290836","photo-1519389950473-47ba0277781c","photo-1517336714731-489689fd1ca8","photo-1496181133206-80ce9b88a853","photo-1583863788434-e58a36330cf0","photo-1612198188060-c7c2a3b66eae","photo-1591370874773-6702e8f12fd8","photo-1608043152269-423dbba4e7e1","photo-1603302576837-37561b2e2302","photo-1587829741301-dc798b83add3","photo-1615663245857-ac93bb7c39e7","photo-1527443224154-c4a3942d3acf","photo-1593642632559-0c6d3fc62b89","photo-1468495244123-6c6c332eeece","photo-1548516173-3cabfa4607e9","photo-1558089687-f282ffcbc0d6","photo-1585771724684-38269d6639fd"],
+                    "Clothing": ["photo-1523381294911-8d3cead13475","photo-1542291026-7eec264c27ff","photo-1556821840-3a63f15732ce","photo-1515886657613-9f3515b0c78f","photo-1434389677669-e08b4cac3105","photo-1552902865-b72c031ac5ea","photo-1618354691373-d851c5c3a990","photo-1560243563-062bfc001d68","photo-1541099649105-f69ad21f3246","photo-1591047139829-d91aecb6caea","photo-1507679799987-c73779587ccf","photo-1512436991641-6745cdb1723f","photo-1521572267360-ee0c2909d518","photo-1509967419530-da38b4704bc6","photo-1578632767115-351597cf2477","photo-1556905055-8f358a7a47b2","photo-1576995853123-5a10305d93c0","photo-1620799140408-edc6dcb6d633","photo-1598033129183-c4f50c736f10","photo-1539533018447-63fcce2678e3"],
+                    "Home & Kitchen": ["photo-1556909114-f6e7ad7d3136","photo-1484154218962-a197022b5858","photo-1586023492125-27b2c045efd7","photo-1555041469-a586c61ea9bc","photo-1618220252344-8ec99ec624b1","photo-1558618666-fcd25c85cd64","photo-1507473885765-e6ed057f782c","photo-1585515320310-259814833e62","photo-1484101403633-562f891dc89a","photo-1493663284031-b7e3aefcae8e","photo-1540574163026-643ea20ade25","photo-1631048835583-48b573498e8d","photo-1617050318658-a9a3175474d8","photo-1580552025938-a7f00e1bcd87","photo-1584992236310-6edddc08acff","photo-1558317374-067fb5f30001","photo-1485955900006-10f4d324d411","photo-1522771739844-6a9f6d5f14af","photo-1593642632559-0c6d3fc62b89","photo-1507473885765-e6ed057f782c"],
+                    "Sports & Outdoors": ["photo-1534438327276-14e5300c3a48","photo-1584735935682-2f2b69dff9d2","photo-1518611012118-696072aa579a","photo-1510017803434-a899398421b3","photo-1590487988256-9ed24133863e","photo-1534258936925-c58bed479fcb","photo-1571019613454-1cb2f99b2d8b","photo-1517836357463-d25dfeac3438","photo-1574680096145-d05b474e2155","photo-1526506118085-60ce8714f8c5","photo-1552196563-55cd4e45efb3","photo-1553062407-98eeb64c6a62","photo-1485965120184-e220f721d03e","photo-1539794830467-1f1755804d13","photo-1556817411-31ae72fa3ea0","photo-1567521464027-f127ff144326","photo-1583258292688-d0213dc5a3a8","photo-1571019613454-1cb2f99b2d8b","photo-1574680178181-f5a8f463b7a2","photo-1541534741688-6078c6bfb5c5"],
+                    "Toys & Games": ["photo-1606166325683-e6deb697d301","photo-1558060370-d644479cb6f7","photo-1530325553241-4f6e7690cf36","photo-1596461404969-9ae70f2830c1","photo-1566576912321-d58ddd7a6088","photo-1550745165-9bc0b252726f","photo-1593305841991-05c297ba4575","photo-1612287230202-1ff1d85d1bdf","photo-1580327344181-c1163234e5a0","photo-1587654780291-39c9404d746b","photo-1563396983906-b3795482a59a","photo-1533090161767-e6ffed986c88","photo-1559561853-08451507cbe7","photo-1584278860421-9b0d7ba18913","photo-1515488042361-ee00e0ddd4e4","photo-1504275538-bf3c0649d74c","photo-1600080972464-8e5f35f63d08","photo-1516321165247-4aa89a48be28","photo-1534361960057-19f4434a4d83","photo-1556742049-0cfed4f6a45d"],
+                    "Books": ["photo-1544716278-ca5e3f4abd8c","photo-1512820790803-83ca734da794","photo-1526243741027-444d633d7365","photo-1481627834876-b7833e8f5570","photo-1495446815901-a7297e633e8d","photo-1519682337058-a94d519337bc","photo-1476275466078-4cad320e42ab","photo-1531901599143-df5010ab9438","photo-1474932430478-367dbb6832c1","photo-1509021436665-8f07dbf5bf1d","photo-1507842217343-583bb7270b66","photo-1455390582262-044cdead277a","photo-1543002588-bfa74002ed7e","photo-1456513080510-7bf3a84b82f8","photo-1592496431122-2349e0fbc666","photo-1566788529-d38e7b9ccb26","photo-1524578271613-d073ff0e69be","photo-1491841550275-ad7854e35ca6","photo-1553729459-efe14ef6055d","photo-1471107340929-a87cd0f5b5f3"],
+                    "Beauty & Personal Care": ["photo-1522335789203-aabd1fc54bc9","photo-1556228720-195a672e8a03","photo-1571781926291-c477ebfd024b","photo-1596462502278-27bfdc403348","photo-1512290923902-8a9f81dc236c","photo-1576426863848-c21f53c60b19","photo-1559056199-641a0ac8b55e","photo-1517841905240-472988babdf9","photo-1519735777090-ec97162dc266","photo-1527799820374-dcf8d9d4a388","photo-1516975080664-ed2fc6a32937","photo-1567721913486-6585f069b639","photo-1620916566398-39f1143ab7be","photo-1607748862156-7c548e7e98f4","photo-1570172619644-dfd03ed5d881","photo-1585237017125-24baf8d7406f","photo-1598440947619-2c35fc9aa908","photo-1608248597279-f99d160bfcbc","photo-1631390547040-9dcddd5a1d0e","photo-1521590832167-7bcbfaa6381f"],
+                }
+                DEFAULT_POOL = ["photo-1523275335684-37898b6baf30","photo-1526170375885-4d8ecf77b99f","photo-1491553895911-0055eca6402d","photo-1441986300917-64674bd600d8","photo-1607082348824-0a96f2a4b9da","photo-1584308666744-24d5c474f2ae","photo-1612817288484-6f916006741a","photo-1585386959984-a4155224a1ad","photo-1513094775335-8de23a4b98a2","photo-1563013544-824ae1b704d3","photo-1556742393-d75f468bfcb0","photo-1549451371-64aa98a6f660","photo-1586495777744-4e6232bf2e49","photo-1601597111158-2fceff292cdc","photo-1560343090-f0409e92791a","photo-1585747860715-2ba37e788b70","photo-1553062407-98eeb64c6a62","photo-1487222477894-8943e31ef7b2","photo-1472851294608-062f824d29cc","photo-1546868871-7041f2a55e12"]
+                # category of current product
+                prod_cat = conn.execute("SELECT category FROM products WHERE id=?", (p_id,)).fetchone()
+                cat_name = prod_cat[0] if prod_cat else "default"
+                pool = REVIEW_PHOTO_POOLS.get(cat_name, DEFAULT_POOL)
+                # Use r_idx to cycle through the pool for variety
+                photo_id = pool[r_idx % len(pool)]
+                image_url = f"https://images.unsplash.com/{photo_id}?auto=format&fit=crop&w=400&h=300&q=80"
+
             reviews.append((u_id, p_id, rating_val, review_text, image_url))
             total_reviews += 1
+
             
     c.executemany(
         "INSERT INTO reviews (user_id, product_id, rating, review_text, review_image_url) VALUES (?, ?, ?, ?, ?)",
