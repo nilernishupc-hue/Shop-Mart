@@ -31,12 +31,10 @@
 <!-- ── Personalised Recommendations ─────────────────────────── -->
 {% if current_user and recommendations %}
 <section class="section" id="recommendations-section">
-  <div class="section-header">
-    <h2 class="section-title">
-      ✨ Recommended for <span>{{ current_user.username }}</span>
-    </h2>
-    <a href="{{ url_for('products') }}" class="section-link" id="recs-view-more">View all →</a>
-  </div>
+    <div class="section-header" id="rec-header">
+      <h2 class="section-title">✨ Recommended for <span>{% if current_user.first_name %}{{ current_user.first_name }} {{ current_user.last_name }}{% else %}{{ current_user.username }}{% endif %}</span></h2>
+      <span style="font-size: .85rem; color: var(--text-muted);">Powered by Collaborative &amp; Content-Based Hybrid Filtering (SVD + TF-IDF)</span>
+    </div>
 
   <div class="product-grid" id="recommendations-grid">
     {% for p in recommendations %}

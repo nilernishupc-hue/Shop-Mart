@@ -152,7 +152,7 @@
           <span id="support-badge" style="background:#ef4444; color:#fff; border-radius:50%; width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; font-size:.65rem; font-weight:700; position:absolute; top:-8px; right:-8px; border:2px solid var(--navy-dark);">1</span>
         </button>
         <a href="{{ url_for('profile') }}" class="btn btn-outline" id="nav-profile">
-          👤 {{ current_user.username }}
+          👤 {% if current_user.first_name %}{{ current_user.first_name }} {{ current_user.last_name }}{% else %}{{ current_user.username }}{% endif %}
         </a>
         <a href="{{ url_for('logout') }}" class="btn btn-primary" id="nav-logout">Logout</a>
       {% else %}

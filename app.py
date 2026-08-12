@@ -268,7 +268,7 @@ def product_detail(id):
     # Fetch product reviews
     reviews = query_db(
         """
-        SELECT r.*, u.username
+        SELECT r.*, u.username, u.first_name, u.last_name
         FROM reviews r
         JOIN users u ON r.user_id = u.id
         WHERE r.product_id = ?

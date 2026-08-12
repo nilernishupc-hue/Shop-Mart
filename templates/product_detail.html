@@ -194,9 +194,9 @@
           <div style="background: var(--white); padding: var(--sp3); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--grey-100);" id="review-card-{{ loop.index }}">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--sp1);">
               <div style="display: flex; align-items: center; gap: var(--sp2);">
-                <div class="avatar" style="width: 40px; height: 40px; font-size: 1rem; flex-shrink: 0;">{{ r.username[0]|upper }}</div>
+                <div class="avatar" style="width: 40px; height: 40px; font-size: 1rem; flex-shrink: 0;">{% if r.first_name %}{{ r.first_name[0]|upper }}{% else %}{{ r.username[0]|upper }}{% endif %}</div>
                 <div>
-                  <strong style="color: var(--midnight); font-size: .95rem; display: block;">{{ r.username }}</strong>
+                  <strong style="color: var(--midnight); font-size: .95rem; display: block;">{% if r.first_name %}{{ r.first_name }} {{ r.last_name }}{% else %}{{ r.username }}{% endif %}</strong>
                   <span style="font-size: .8rem; color: var(--text-muted); display: block;">Verified Purchaser</span>
                 </div>
               </div>
