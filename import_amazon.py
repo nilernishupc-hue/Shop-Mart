@@ -1118,8 +1118,20 @@ def populate_from_excel():
             # 50% chance to include a review photo
             image_url = None
             if random.random() < 0.5:
-                # Use Flickr with a unique lock to get a different image of the same category keyword!
-                image_url = f"https://loremflickr.com/400/300/{keyword}?lock={random.randint(1, 1000)}"
+                # Use the product's own image with slight crop variation so
+                # the review photo always matches the product
+                crop_variants = [
+                    "?auto=format&fit=crop&w=400&h=300&q=80",
+                    "?auto=format&fit=crop&w=400&h=300&q=75&crop=center",
+                    "?auto=format&fit=crop&w=400&h=300&q=80&crop=top",
+                    "?auto=format&fit=crop&w=400&h=300&q=80&crop=bottom",
+                    "?auto=format&fit=crop&w=360&h=280&q=80",
+                ]
+                # Get the product's image_url base
+                prod_row = conn.execute("SELECT image_url FROM products WHERE id=?", (p_id,)).fetchone()
+                if prod_row and prod_row[0]:
+                    base = prod_row[0].split('?')[0]
+                    image_url = base + random.choice(crop_variants)
                 
             reviews.append((u_id, p_id, rating_val, review_text, image_url))
             total_reviews += 1
