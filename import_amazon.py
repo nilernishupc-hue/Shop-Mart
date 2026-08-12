@@ -102,7 +102,7 @@ PRODUCT_METADATA = {
     },
     "P00017": {
         "category": "Home & Kitchen",
-        "unsplash_id": "photo-1594056263590-7856b3e94477",
+        "unsplash_id": "photo-1585771724684-38269d6639fd",
         "desc": "Rapid-boil cordless electric kettle made of durable stainless steel with automatic shut-off."
     },
     "P00018": {
@@ -167,7 +167,7 @@ PRODUCT_METADATA = {
     },
     "P00030": {
         "category": "Clothing",
-        "unsplash_id": "photo-1620012253295-c05518e993be",
+        "unsplash_id": "photo-1598033129183-c4f50c736f10",
         "desc": "Wrinkle-resistant cotton dress shirt offering a tailored slim fit and elegant styling."
     },
     "P00031": {
@@ -222,7 +222,7 @@ PRODUCT_METADATA = {
     },
     "P00041": {
         "category": "Electronics",
-        "unsplash_id": "photo-1603539958741-f62f91ebcf8f",
+        "unsplash_id": "photo-1612198188060-c7c2a3b66eae",
         "desc": "Full HD 1080p autofocus webcam with dual noise-reducing microphones for virtual meetings."
     },
     "P00042": {
@@ -237,7 +237,7 @@ PRODUCT_METADATA = {
     },
     "P00044": {
         "category": "Electronics",
-        "unsplash_id": "photo-1609592424467-33e144a1b023",
+        "unsplash_id": "photo-1583863788434-e58a36330cf0",
         "desc": "High-density 20,000mAh external power bank with fast charging outputs for various devices."
     },
     "P00045": {
@@ -257,7 +257,7 @@ PRODUCT_METADATA = {
     },
     "P00048": {
         "category": "Electronics",
-        "unsplash_id": "photo-1622445262465-2481c457487f",
+        "unsplash_id": "photo-1591370874773-6702e8f12fd8",
         "desc": "Fast wireless charging pad with intelligent temp control and slip-resistant surface."
     },
     "P00049": {
@@ -463,7 +463,7 @@ def populate_from_excel():
         ("Puffer Down Jacket", 99.99, "photo-1548883354-7622d03aca27", "Quilted puffer jacket packed with lightweight warm down insulation."),
         ("Wool Trench Coat", 169.99, "photo-1515886657613-9f3515b0c78f", "Elegant double-breasted wool blend trench coat with removable waist belt."),
         ("Bomber Flight Jacket", 69.99, "photo-1591047139829-d91aecb6caea", "Classic military-style nylon bomber jacket with ribbed collar and utility arm pocket."),
-        ("Sherpa Lined Fleece Jacket", 54.99, "photo-1516762689617-e1cffffd478d", "Ultra-cozy sherpa fleece jacket with full front zipper and zippered hand pockets."),
+        ("Sherpa Lined Fleece Jacket", 54.99, "photo-1591047139829-d91aecb6caea", "Ultra-cozy sherpa fleece jacket with full front zipper and zippered hand pockets."),
         ("Lightweight Anorak", 49.99, "photo-1578587018452-892bacefd3f2", "Casual pullover anorak jacket with front pouch pocket and adjustable drawstring hem."),
         ("Tailored Suit Blazer", 119.99, "photo-1507679799987-c73779587ccf", "Slim-fit structured suit blazer jacket with notch lapel and inner pocket details."),
         ("Corduroy Trucker Jacket", 64.99, "photo-1512436991641-6745cdb1723f", "Soft ribbed corduroy jacket with warm fleece collar lining."),
@@ -471,7 +471,7 @@ def populate_from_excel():
         ("Quilted Vest Bodywarmer", 44.99, "photo-1521572267360-ee0c2909d518", "Sleeveless insulated vest perfect for seasonal layering over hoodies."),
         ("Suede Biker Jacket", 139.99, "photo-1520975954732-35dd22299614", "Soft brushed suede leather jacket with silver metal hardware."),
         ("Wool Peacoat", 149.99, "photo-1539533018447-63fcce2678e3", "Classic nautical double-breasted navy blue wool peacoat."),
-        ("Waterproof Running Jacket", 49.99, "photo-1483721063604-098eeb64c6a6", "Reflective ultra-light running jacket for night workouts."),
+        ("Waterproof Running Jacket", 49.99, "photo-1542291026-7eec264c27ff", "Reflective ultra-light running jacket for night workouts."),
         ("Fleece Zip Hoodie Jacket", 39.99, "photo-1556905055-8f358a7a47b2", "Heavyweight fleece hoodie with full zip and split kangaroo pocket."),
         ("Denim Shearling Jacket", 89.99, "photo-1576995853123-5a10305d93c0", "Heavy denim jacket lined with thick plush shearling fleece."),
         ("Casual Linen Blazer", 79.99, "photo-1507679799987-c73779587ccf", "Breathable summer linen blazer ideal for smart-casual outings."),
@@ -483,7 +483,7 @@ def populate_from_excel():
         ("Cable Knit Wool Sweater", 54.99, "photo-1620799140408-edc6dcb6d633", "Cozy chunky cable-knit wool sweater with classic crew neckline."),
         ("Graphic Print Streetwear Hoodie", 49.99, "photo-1509967419530-da38b4704bc6", "Streetwear cotton hoodie featuring custom screen-printed back graphics."),
         ("Turtleneck Ribbed Sweater", 49.99, "photo-1434389677669-e08b4cac3105", "Fitted rib-knit turtleneck sweater crafted from soft breathable yarn."),
-        ("Half-Zip Fleece Pullover", 42.99, "photo-1516762689617-e1cffffd478d", "Thermal polar fleece pullover with stand collar and 1/2 zip neck."),
+        ("Half-Zip Fleece Pullover", 42.99, "photo-1556821840-3a63f15732ce", "Thermal polar fleece pullover with stand collar and 1/2 zip neck."),
         ("Vintage Wash Sweatshirt", 44.99, "photo-1578632767115-351597cf2477", "Pigment-dyed vintage aesthetic fleece sweatshirt with worn-in feel."),
         ("Cashmere Crew Sweater", 89.99, "photo-1620799140408-edc6dcb6d633", "100% pure cashmere luxury sweater offering unparalleled softness."),
         ("Cropped Fleece Hoodie", 34.99, "photo-1556905055-8f358a7a47b2", "Trendy cropped hoodie with raw-edge hem and drawstring hood."),
@@ -491,7 +491,7 @@ def populate_from_excel():
         ("Heavyweight Thermal Henley", 32.99, "photo-1521572267360-ee0c2909d518", "Waffle-weave thermal henley shirt with 3-button placket."),
         ("Zip-Up Knit Cardigan", 49.99, "photo-1434389677669-e08b4cac3105", "Full-zip knit cardigan with stand collar and ribbed trim."),
         ("Tie-Dye Pullover Hoodie", 42.99, "photo-1509967419530-da38b4704bc6", "Vibrant hand-dyed tie-dye hoodie made with ultra-soft fleece."),
-        ("Fleece Quarter-Snap Pullover", 38.99, "photo-1516762689617-e1cffffd478d", "Retro fleece pullover with snap-button placket and chest pocket."),
+        ("Fleece Quarter-Snap Pullover", 38.99, "photo-1618354691373-d851c5c3a990", "Retro fleece pullover with snap-button placket and chest pocket."),
         ("Oversized Knit Jumper", 47.99, "photo-1620799140408-edc6dcb6d633", "Slouchy oversized knit jumper sweater in neutral earth tones."),
         ("Tech Fleece Zip Jacket", 59.99, "photo-1556905055-8f358a7a47b2", "Sleek tech fleece zip jacket with zippered sleeve pocket."),
         ("Knit Sweater Vest", 34.99, "photo-1434389677669-e08b4cac3105", "Preppy V-neck sweater vest crafted with soft cotton knit."),
@@ -523,7 +523,7 @@ def populate_from_excel():
 
         # Pants & Bottoms (20 items)
         ("Slim Fit Stretch Jeans", 59.99, "photo-1541099649105-f69ad21f3246", "Dark wash denim jeans featuring 5-pocket styling and stretch comfort."),
-        ("Straight Leg Vintage Jeans", 64.99, "photo-1542272604-780c36856d63", "100% rigid cotton classic 90s straight leg blue denim jeans."),
+        ("Straight Leg Vintage Jeans", 64.99, "photo-1560243563-062bfc001d68", "100% rigid cotton classic 90s straight leg blue denim jeans."),
         ("Relaxed Fit Cargo Pants", 49.99, "photo-1624378439575-d8705ad7ae80", "Durable cotton twill cargo pants with multiple utility pockets."),
         ("Tailored Stretch Chino Pants", 44.99, "photo-1473966968600-fa801b869a1a", "Versatile flat-front stretch chino pants suitable for work and weekend."),
         ("Fleece Jogger Sweatpants", 34.99, "photo-1552902865-b72c031ac5ea", "Soft fleece joggers with elastic drawstring waist and cuffed ankles."),
@@ -532,7 +532,7 @@ def populate_from_excel():
         ("Wide Leg Linen Trousers", 46.99, "photo-1473966968600-fa801b869a1a", "Flowy wide-leg linen pants with elastic waist and side pockets."),
         ("Pleated Dress Trousers", 69.99, "photo-1507679799987-c73779587ccf", "Formal double-pleated suit trousers with creased legs."),
         ("Corduroy Straight Trousers", 48.99, "photo-1541099649105-f69ad21f3246", "Fine-wale corduroy trousers in warm chestnut brown."),
-        ("High-Waist Mom Jeans", 58.99, "photo-1542272604-780c36856d63", "High-rise tapered leg vintage wash denim jeans."),
+        ("High-Waist Mom Jeans", 58.99, "photo-1541099649105-f69ad21f3246", "High-rise tapered leg vintage wash denim jeans."),
         ("Athletic Tracksuit Pants", 32.99, "photo-1552902865-b72c031ac5ea", "Retro nylon track pants with zip ankles and mesh lining."),
         ("Tactile Cargo Joggers", 42.99, "photo-1624378439575-d8705ad7ae80", "Streetwear tactical cargo joggers with strap details."),
         ("Faux Leather Biker Pants", 129.99, "photo-1541099649105-f69ad21f3246", "Faux leather fitted biker pants with knee panel details."),
@@ -678,9 +678,9 @@ def populate_from_excel():
         ("Dyson Purifier Hot+Cool Fan", 749.99, "photo-1558317374-067fb5f30001", "HEPA air purifier, space heater, and cooling fan in one."),
         ("Leviathan Ergonomic Desk Lamp", 79.99, "photo-1507473885765-e6ed057f782c", "Dimmable LED architect desk lamp with wireless phone charger."),
         ("Artificial Monstera Plant", 49.99, "photo-1485955900006-10f4d324d411", "Realistic 4-foot indoor artificial Swiss cheese plant in pot."),
-        ("Memory Foam Contour Pillow", 39.99, "photo-1584100936595-c0654b55a2e6", "Ergonomic cervical orthopedic neck support bed pillow."),
-        ("Luxury Egyptian Cotton Sheets", 129.99, "photo-1584100936595-c0654b55a2e6", "1000 thread count deep pocket sateen bed sheet set."),
-        ("Weighted Blanket 15lbs", 69.99, "photo-1584100936595-c0654b55a2e6", "Glass bead heavy soothing pressure blanket with washable cover."),
+        ("Memory Foam Contour Pillow", 39.99, "photo-1631048835583-48b573498e8d", "Ergonomic cervical orthopedic neck support bed pillow."),
+        ("Luxury Egyptian Cotton Sheets", 129.99, "photo-1617050318658-a9a3175474d8", "1000 thread count deep pocket sateen bed sheet set."),
+        ("Weighted Blanket 15lbs", 69.99, "photo-1580552025938-a7f00e1bcd87", "Glass bead heavy soothing pressure blanket with washable cover."),
         ("Bamboo Knife Block Set", 99.99, "photo-1584992236310-6edddc08acff", "15-piece German stainless steel kitchen knife set."),
         ("Non-Stick Ceramic Frying Pans", 79.99, "photo-1584992236310-6edddc08acff", "Toxin-free nonstick ceramic skillet 2-piece set."),
         ("Digital Kitchen Food Scale", 19.99, "photo-1585515320310-259814833e62", "High precision 11lb electronic cooking measure scale."),
@@ -694,11 +694,11 @@ def populate_from_excel():
         ("Handheld Garment Steamer", 39.99, "photo-1558317374-067fb5f30001", "Fast heat-up portable clothing fabric steam remover."),
         ("Ultrasonic Oil Diffuser", 27.99, "photo-1507473885765-e6ed057f782c", "Aromatherapy cool mist humidifier with 7 color LED lights."),
         ("Scented Soy Candle Gift Set", 24.99, "photo-1507473885765-e6ed057f782c", "Natural aromatherapy soy candles in decorative tins 4-pack."),
-        ("Velvet Accent Armchair", 199.99, "photo-1580481072645-022f9a6d5019", "Mid-century modern soft velvet club chair with gold legs."),
-        ("Mid-Century Coffee Table", 149.99, "photo-1580481072645-022f9a6d5019", "Solid wood oval living room cocktail table."),
-        ("Full Length Floor Mirror", 119.99, "photo-1580481072645-022f9a6d5019", "Arched aluminum alloy frame standing dressing mirror."),
+        ("Velvet Accent Armchair", 199.99, "photo-1586023492125-27b2c045efd7", "Mid-century modern soft velvet club chair with gold legs."),
+        ("Mid-Century Coffee Table", 149.99, "photo-1555041469-a586c61ea9bc", "Solid wood oval living room cocktail table."),
+        ("Full Length Floor Mirror", 119.99, "photo-1618220252344-8ec99ec624b1", "Arched aluminum alloy frame standing dressing mirror."),
         ("Woven Storage Baskets", 32.99, "photo-1485955900006-10f4d324d411", "Natural cotton rope laundry and toy organizer baskets 3-pack."),
-        ("Blackout Window Curtains", 39.99, "photo-1584100936595-c0654b55a2e6", "Thermal insulated noise reducing grommet curtain drapes.")
+        ("Blackout Window Curtains", 39.99, "photo-1558618666-fcd25c85cd64", "Thermal insulated noise reducing grommet curtain drapes.")
     ]
 
     # Additional Sports & Outdoors (42 items -> 50+ total Sports & Outdoors)
@@ -712,8 +712,8 @@ def populate_from_excel():
         ("Osprey Atmos AG 65 Backpack", 340.00, "photo-1553062407-98eeb64c6a62", "Anti-Gravity mesh suspension expedition hiking backpack."),
         ("Garmin Edge 540 Bike Computer", 349.99, "photo-1485965120184-e220f721d03e", "Solar charging GPS cycling computer with stamina insights."),
         ("Trek FX 3 Disc Fitness Bike", 1049.99, "photo-1485965120184-e220f721d03e", "Performance hybrid aluminum bicycle with hydraulic disc brakes."),
-        ("NordicTrack 2450 Treadmill", 2499.00, "photo-157698927484-cc909957088c", "22-inch HD tilt touchscreen foldable running treadmill."),
-        ("Concept2 Model D Rowing Machine", 990.00, "photo-157698927484-cc909957088c", "Indoor air resistance rower with PM5 performance monitor."),
+        ("NordicTrack 2450 Treadmill", 2499.00, "photo-1590487988256-9ed24133863e", "22-inch HD tilt touchscreen foldable running treadmill."),
+        ("Concept2 Model D Rowing Machine", 990.00, "photo-1534258936925-c58bed479fcb", "Indoor air resistance rower with PM5 performance monitor."),
         ("TRX PRO4 Suspension Trainer", 249.95, "photo-1584735935682-2f2b69dff9d2", "Bodyweight workout straps with adjustable foot cradles."),
         ("Theragun PRO Massage Gun", 599.00, "photo-1584735935682-2f2b69dff9d2", "Deep tissue percussive therapy device with OLED screen."),
         ("Fitbit Charge 6 Fitness Tracker", 159.95, "photo-1510017803434-a899398421b3", "Heart rate and ECG fitness tracker with built-in GPS."),
