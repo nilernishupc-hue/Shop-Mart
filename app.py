@@ -128,18 +128,26 @@ def api_best_sellers():
 def login():
     error = None
     if request.method == "POST":
-        username = request.form.get("username", "").strip()
+        login_input = request.form.get("username", "").strip()
         password = request.form.get("password", "").strip()
         
         user = query_db(
-            "SELECT * FROM users WHERE (username = ? OR email = ?) AND password = ?",
-            [username, username, password],
+            """
+            SELECT * FROM users 
+            WHERE (
+                LOWER(username) = LOWER(?) OR 
+                LOWER(email) = LOWER(?) OR 
+                LOWER(first_name || ' ' || last_name) = LOWER(?) OR
+                LOWER(first_name) = LOWER(?)
+            ) AND password = ?
+            """,
+            [login_input, login_input, login_input, login_input, password],
             one=True
         )
         if user:
             session["user_id"] = user["id"]
             return redirect(url_for("index"))
-        error = "Invalid username/email or password. For demo accounts, use password 'password123'."
+        error = "Invalid credentials. Please enter your Full Name, Username, or Email and correct password."
     return render_template("login.html", error=error)
 
 
@@ -154,20 +162,26 @@ def register():
         password   = request.form.get("password", "").strip()
         dob        = request.form.get("dob", "").strip()
         
-        if not username or not email or not password:
-            error = "Username, email, and password are required."
+        if not username:
+            username = f"{first_name} {last_name}".strip() or email
+
+        if not email or not password:
+            error = "Email and password are required."
         else:
             db = get_db()
-            # Check username uniqueness
-            exist_username = query_db("SELECT * FROM users WHERE username = ?", [username], one=True)
             # Check email uniqueness
-            exist_email = query_db("SELECT * FROM users WHERE email = ?", [email], one=True)
+            exist_email = query_db("SELECT * FROM users WHERE LOWER(email) = LOWER(?)", [email], one=True)
             
-            if exist_username:
-                error = f"Username '{username}' is already taken."
-            elif exist_email:
-                error = f"Email '{email}' is already registered."
+            if exist_email:
+                error = f"Email '{email}' is already registered. Please login instead."
             else:
+                # Ensure username is unique in database
+                base_username = username
+                counter = 1
+                while query_db("SELECT id FROM users WHERE username = ?", [username], one=True):
+                    username = f"{base_username} ({counter})"
+                    counter += 1
+
                 try:
                     cur = db.execute(
                         "INSERT INTO users (username, email, password, first_name, last_name, dob) VALUES (?, ?, ?, ?, ?, ?)",
