@@ -86,9 +86,91 @@
         }
       </script>
 
+      <!-- Trust & Service Badges -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 16px; margin-bottom: 20px; background: #f8fafc; padding: 14px; border-radius: 12px; border: 1px solid #e2e8f0;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:1.2rem;">🚚</span>
+          <div><strong style="font-size:0.78rem; display:block; color:#1e293b;">Free Express Shipping</strong><span style="font-size:0.7rem; color:#64748b;">Orders over $35</span></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:1.2rem;">🛡️</span>
+          <div><strong style="font-size:0.78rem; display:block; color:#1e293b;">1-Year Warranty</strong><span style="font-size:0.7rem; color:#64748b;">Full replacement</span></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:1.2rem;">🔄</span>
+          <div><strong style="font-size:0.78rem; display:block; color:#1e293b;">30-Day Returns</strong><span style="font-size:0.7rem; color:#64748b;">Hassle-free money back</span></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:1.2rem;">🔒</span>
+          <div><strong style="font-size:0.78rem; display:block; color:#1e293b;">Secure Checkout</strong><span style="font-size:0.7rem; color:#64748b;">256-bit SSL Protection</span></div>
+        </div>
+      </div>
+
       <hr class="detail-divider" />
 
-      <p class="detail-desc" id="product-description">{{ product.description }}</p>
+      <!-- Description & Features -->
+      <div style="margin-bottom: 24px;">
+        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--midnight); margin-bottom: 8px;">Product Overview</h3>
+        <p class="detail-desc" id="product-description" style="line-height: 1.6; color: #475569;">{{ product.description }}</p>
+      </div>
+
+      <!-- Key Product Highlights -->
+      <div style="margin-bottom: 24px;">
+        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--midnight); margin-bottom: 12px;">✨ Key Product Highlights</h3>
+        <ul style="list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+          <li style="display:flex; align-items:center; gap:8px; background:#f1f5f9; padding:10px 14px; border-radius:8px; font-size:0.88rem; color:#334155; font-weight:500;">
+            <span style="color:#10b981; font-weight:bold;">✓</span> Premium High-Grade Construction
+          </li>
+          <li style="display:flex; align-items:center; gap:8px; background:#f1f5f9; padding:10px 14px; border-radius:8px; font-size:0.88rem; color:#334155; font-weight:500;">
+            <span style="color:#10b981; font-weight:bold;">✓</span> Certified Authentic Brand Product
+          </li>
+          <li style="display:flex; align-items:center; gap:8px; background:#f1f5f9; padding:10px 14px; border-radius:8px; font-size:0.88rem; color:#334155; font-weight:500;">
+            <span style="color:#10b981; font-weight:bold;">✓</span> Eco-Friendly & Sustainable Packaging
+          </li>
+          <li style="display:flex; align-items:center; gap:8px; background:#f1f5f9; padding:10px 14px; border-radius:8px; font-size:0.88rem; color:#334155; font-weight:500;">
+            <span style="color:#10b981; font-weight:bold;">✓</span> Tested & Quality Assured
+          </li>
+        </ul>
+      </div>
+
+      <!-- Detailed Product Specifications Table -->
+      <div style="margin-bottom: 24px;">
+        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--midnight); margin-bottom: 12px;">📋 Specifications & Technical Details</h3>
+        <div style="border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left;">
+            <tbody>
+              <tr style="border-bottom: 1px solid #e2e8f0; background: #ffffff;">
+                <td style="padding: 12px 16px; font-weight: 700; color: #475569; width: 40%; background: #f8fafc;">Product SKU / ID</td>
+                <td style="padding: 12px 16px; font-weight: 600; color: #0f172a;">SM-PROD-{{ "%05d"|format(product.id) }}</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #e2e8f0; background: #ffffff;">
+                <td style="padding: 12px 16px; font-weight: 700; color: #475569; background: #f8fafc;">Category</td>
+                <td style="padding: 12px 16px; font-weight: 600; color: #0f172a;">{{ product.category }}</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #e2e8f0; background: #ffffff;">
+                <td style="padding: 12px 16px; font-weight: 700; color: #475569; background: #f8fafc;">Availability / Stock</td>
+                <td style="padding: 12px 16px; font-weight: 600; color: #10b981;">● In Stock (Ships in 24 hrs)</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #e2e8f0; background: #ffffff;">
+                <td style="padding: 12px 16px; font-weight: 700; color: #475569; background: #f8fafc;">Customer Rating</td>
+                <td style="padding: 12px 16px; font-weight: 600; color: #0f172a;">⭐ {{ product.rating }} / 5.0 Rating</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #e2e8f0; background: #ffffff;">
+                <td style="padding: 12px 16px; font-weight: 700; color: #475569; background: #f8fafc;">Condition</td>
+                <td style="padding: 12px 16px; font-weight: 600; color: #0f172a;">100% Brand New, Unopened</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #e2e8f0; background: #ffffff;">
+                <td style="padding: 12px 16px; font-weight: 700; color: #475569; background: #f8fafc;">Warranty</td>
+                <td style="padding: 12px 16px; font-weight: 600; color: #0f172a;">12 Months Full Manufacturer Warranty</td>
+              </tr>
+              <tr style="background: #ffffff;">
+                <td style="padding: 12px 16px; font-weight: 700; color: #475569; background: #f8fafc;">Shipping & Returns</td>
+                <td style="padding: 12px 16px; font-weight: 600; color: #0f172a;">30-Day Money Back Guarantee & Free Return Label</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       <hr class="detail-divider" />
 
