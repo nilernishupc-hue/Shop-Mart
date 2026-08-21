@@ -1,54 +1,85 @@
-# AI-Powered Personalised Recommendation System
+# Shop Mart: AI-Powered Personalised Recommendation System
+**MSc Research Project & Web Prototype**  
+*Ulster University*  
+**Developer**: MD RAISUL ISLAM  
+**Live Application**: [https://shop-mart-3xuw.onrender.com](https://shop-mart-3xuw.onrender.com)  
 
-## Overview
-This is a web-based prototype demonstrating various AI-powered recommendation systems for an e-commerce context. It implements Collaborative Filtering (using SVD), Content-Based Filtering (using TF-IDF + Cosine Similarity), and a Hybrid approach.
+---
 
-This project was built for an MSc research project to showcase how recommendation systems work, including model evaluation metrics and explainable AI features ("Because you viewed X, we recommend Y").
+## 📌 Project Overview
+Shop Mart is a full-stack, AI-powered e-commerce web application developed as an MSc research prototype. The system demonstrates advanced machine learning recommendation engines (Collaborative Filtering, Content-Based Filtering, and Hybrid models) integrated with a modern e-commerce web platform.
 
-## Features
-- **Modern UI**: Built with a clean, premium Midnight blue / Soft blue color scheme.
-- **Collaborative Filtering**: Recommends items based on similar users' preferences (Surprise library).
-- **Content-Based Filtering**: Recommends items similar to ones a user is currently viewing (Scikit-Learn).
-- **Hybrid Recommendations**: A weighted combination on the Home page (0.6 CF + 0.4 CB).
-- **Explanation Generator**: Clear reasoning for every recommendation provided.
-- **Evaluation Dashboard**: Visual representation of model performances (Precision, Recall, F1).
-- **Self-Contained Data**: Generates a high-quality, simulated dataset of 50 products and 20 users upon setup.
+---
 
-## Setup Instructions
+## ✨ Key Features & Capabilities
 
-### Prerequisites
-- Python 3.8+
-- pip (Python package manager)
+- 🤖 **Triple Recommendation Engine**:
+  - **Collaborative Filtering (SVD)**: Predicts user preferences based on 3,000+ user interactions.
+  - **Content-Based Filtering (TF-IDF)**: Calculates product similarity based on descriptions and metadata.
+  - **Hybrid Model**: Combines Collaborative and Content-Based models (0.6 SVD + 0.4 TF-IDF) for personalized home page recommendations.
 
-### Installation
-1. Clone or download this repository.
-2. Open a terminal in the project directory.
-3. Create a virtual environment (recommended):
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows use: venv\Scripts\activate
-   ```
-4. Install dependencies:
+- 📊 **Model Evaluation Dashboard**:
+  - Compares **5 Recommendation Models** (Random, Popularity, Collaborative Filtering, Content-Based, and Hybrid).
+  - Visualizes **5 Evaluation Metrics** (Precision@5, Recall@5, F1-Score, MAP, NDCG) using interactive Chart.js grouped bar charts.
+
+- 🛒 **Full E-Commerce Web Features**:
+  - **Temu-Style 1-Click Shortcut Cart**: Instant floating `🛒` cart addition on all product cards with real-time AJAX badge updates.
+  - **Product Detail Specifications**: Technical specifications table, stock status, 12-month warranty details, and service badges.
+  - **Verified Photo Reviews**: Category-matched product photo customer reviews.
+  - **Interactive Support Widget**: Floating live chat assistant for instant user guidance.
+  - **Temu-Style Comprehensive Footer**: Company info, customer service, app downloads, social links, and security certificates.
+
+---
+
+## 🛠️ Technology Stack
+- **Backend Framework**: Python 3.11 / Flask
+- **Database**: SQLite3 (`ecommerce.db`)
+- **Machine Learning**: Scikit-Learn (TF-IDF, Cosine Similarity), Surprise (SVD Matrix Factorization), Pandas, NumPy
+- **Frontend**: HTML5, CSS3, JavaScript (ES6+), Chart.js
+- **Cloud Deployment**: Gunicorn, WhiteNoise, Render Cloud Hosting
+
+---
+
+## 🚀 Local Setup & Installation
+
+### 1. Prerequisites
+- Python 3.8+ installed on your computer.
+
+### 2. Running Locally
+1. Open a terminal / command prompt in the project root folder.
+2. Install required Python packages:
    ```bash
    pip install -r requirements.txt
    ```
-5. Generate the mock database and data:
-   ```bash
-   python generate_data.py
-   ```
-   *Note: This script will create `ecommerce.db` and populate it with simulated products, users, and interaction histories required to train the recommendation models.*
-
-### Running the Application
-1. Start the Flask server:
+3. Run the application:
    ```bash
    python app.py
    ```
-2. Open your web browser and go to `http://127.0.0.1:5000/`.
+4. Access the site in your browser at:
+   `http://127.0.0.1:5000`
 
-### How to Use the Prototype
-- **Login**: Go to the login page and use any username from `User1` to `User20` (no password required).
-- **Home Page**: Once logged in, you will see a personalized "Recommended for You" section utilizing the Hybrid model.
-- **Product Details**: Click on any product to view its details. At the bottom, you'll see "You May Also Like" which uses the Content-Based Filtering model to suggest similar items.
-- **Rate Products**: You can rate products you view (1-5 stars) to influence future recommendations.
-- **Profile**: View your interaction history (views, purchases, ratings).
-- **Dashboard**: View the simulated model evaluation metrics comparing CF, CB, and Hybrid models.
+---
+
+## 🔑 Demo Account Credentials
+- **Full Name / Login**: `Vihaan Sharma` (or `Pooja Kumar`, `Sneha Singh`)
+- **Password**: `password123`
+- *Note*: You can also register a new account on the `/register` page and log in using your Full Name, Username, or Email.
+
+---
+
+## 📁 Submission File Structure
+```
+Web Site Files/
+├── app.py                      # Flask Server & API routes
+├── recommendation_engine.py    # Machine Learning Models (SVD, TF-IDF, Hybrid)
+├── models.py                   # SQLite Database schema & helpers
+├── ecommerce.db                # SQLite database with 60 products & 3,000+ interactions
+├── import_amazon.py            # Dataset import & seed script
+├── requirements.txt            # Python dependencies
+├── Procfile                    # Render cloud deployment configuration
+├── static/                     # CSS stylesheets, images, and upload assets
+└── templates/                  # Jinja2 HTML templates (layout, home, products, detail, cart, etc.)
+```
+
+---
+*Developed by **MD RAISUL ISLAM** for MSc Final Research Project & Prototype at Ulster University.*
